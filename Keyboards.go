@@ -45,8 +45,8 @@ var hoodie = tgbotapi.NewInlineKeyboardMarkup(
 
 var pocket = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Нашив карманов", "Sewing"),
-		tgbotapi.NewInlineKeyboardButtonData("Втачной карман", "Set-in"),
+		tgbotapi.NewInlineKeyboardButtonData("Нашив карманов", "pocketSewing"),
+		tgbotapi.NewInlineKeyboardButtonData("Втачной карман", "pocketSet-in"),
 	),
 )
 
@@ -76,12 +76,15 @@ var editFieldPicker = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("Количество", "1"),
 		tgbotapi.NewInlineKeyboardButtonData("Количество цветов", "2"),
-		tgbotapi.NewInlineKeyboardButtonData("Сроки", "5"),
+		//tgbotapi.NewInlineKeyboardButtonData("Сроки", "5"),
 	),
+	//tgbotapi.NewInlineKeyboardRow(
+	//	tgbotapi.NewInlineKeyboardButtonData("Макет", "3"),
+	//	tgbotapi.NewInlineKeyboardButtonData("Мокап", "4"),
+	//	tgbotapi.NewInlineKeyboardButtonData("Комментарий", "6"),
+	//),
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Макет", "3"),
-		tgbotapi.NewInlineKeyboardButtonData("Мокап", "4"),
-		tgbotapi.NewInlineKeyboardButtonData("Комментарий", "6"),
+		tgbotapi.NewInlineKeyboardButtonData("Показать заказ", "editPrint"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("Все верно", "Finish"),
