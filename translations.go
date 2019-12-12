@@ -1,16 +1,20 @@
 package main
 
 var translations = map[string]string{
-	"Sewing":       "Пошив",
-	"Blank":        "Бланковое изделие",
-	"T-shirt":      "Футболка",
-	"Hoodie":       "Худи",
-	"Sweatshirt":   "Свитшот",
-	"Default":      "Обычная",
-	"Set-in":       "Втачной рукав",
-	"Reglan":       "Реглан",
-	"pocketSewing": "Нашив карманов",
-	"pocketSet-in": "Втачной карман",
+	"Sewing":         "Пошив",
+	"Blank":          "Бланковое изделие",
+	"T-shirt":        "Футболка",
+	"Hoodie":         "Худи",
+	"Sweatshirt":     "Свитшот",
+	"Default":        "Обычная",
+	"Set-in":         "Втачной рукав",
+	"Reglan":         "Реглан",
+	"pocketSewing":   "Нашив карманов",
+	"pocketSet-in":   "Втачной карман",
+	"Oversize":       "Оверсайз",
+	"hoodieReglan":   "Реглан",
+	"hoodieOversize": "Оверсайз",
+	"hoodieDefault":  "Обычное",
 }
 
 var types = map[string]string{
