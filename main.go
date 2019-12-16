@@ -1,10 +1,8 @@
 package main
 
 import (
-	"github.com/Syfaro/telegram-bot-api"
+	"context"
 	"github.com/segmentio/ksuid"
-	"log"
-	"strings"
 )
 
 type Order struct {
@@ -45,34 +43,39 @@ func initOrder() *Order {
 	}
 }
 
-func main() {
-	bot, err := tgbotapi.NewBotAPI("910932452:AAFUsTTegZxiin7oAPJ-D8AImMPfT1EQ2cE")
-	if err != nil {
-		log.Panic(err)
-	}
-	bot.Debug = true
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
-	updates, err := bot.GetUpdatesChan(u)
-	var newOrder *Order
-	for update := range updates {
-		var id int64
-		if update.Message != nil {
-			if update.Message.Text != "" {
-				if strings.ToLower(update.Message.Text) == "new" {
-					newOrder = initOrder()
-					orders[update.Message.Chat.ID] = newOrder
+//func main() {
+//	bot, err := tgbotapi.NewBotAPI("910932452:AAFUsTTegZxiin7oAPJ-D8AImMPfT1EQ2cE")
+//	if err != nil {
+//		log.Panic(err)
+//	}
+//	bot.Debug = true
+//	log.Printf("Authorized on account %s", bot.Self.UserName)
+//	u := tgbotapi.NewUpdate(0)
+//	u.Timeout = 60
+//	updates, err := bot.GetUpdatesChan(u)
+//	var newOrder *Order
+//	for update := range updates {
+//		var id int64
+//		if update.Message != nil {
+//			if update.Message.Text != "" {
+//				if strings.ToLower(update.Message.Text) == "new" {
+//					newOrder = initOrder()
+//					orders[update.Message.Chat.ID] = newOrder
+//
+//				}
+//			}
+//			id = update.Message.Chat.ID
+//		} else {
+//			id = update.CallbackQuery.Message.Chat.ID
+//		}
+//		if (update.Message != nil && !update.Message.IsCommand()) || update.CallbackQuery !=nil {
+//			msg := Serve(update, orders[id], id)
+//			bot.Send(msg)
+//		}
+//	}
+//}
 
-				}
-			}
-			id = update.Message.Chat.ID
-		} else {
-			id = update.CallbackQuery.Message.Chat.ID
-		}
-		if update.Message != nil && !update.Message.IsCommand(){
-			msg := Serve(update, orders[id], id)
-			bot.Send(msg)
-		}
-	}
+func main()  {
+	conn := initConnection()
+	defer conn.Close(context.Background())
 }
