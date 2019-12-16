@@ -9,19 +9,19 @@ import (
 
 func printOrder(order *Order) string {
 	var orderPrint string
-	orderPrint += "Тип заказа: " + fmt.Sprintln(translations[order.orderType])
-	orderPrint += "Изделие: " + fmt.Sprintln(translations[order.productName])
-	if len(order.features) != 0 {
+	orderPrint += "Тип заказа: " + fmt.Sprintln(translations[order.Type])
+	orderPrint += "Изделие: " + fmt.Sprintln(translations[order.ProductName])
+	if len(order.Features) != 0 {
 		orderPrint += "Особенности: "
-		for _, feature := range order.features {
+		for _, feature := range order.Features {
 			orderPrint += translations[feature] + ", "
 		}
 		orderPrint += "\n"
 	}
-	orderPrint += "Количество: " + fmt.Sprintln(order.amount)
-	orderPrint += "Количество цветов: " + fmt.Sprintln(order.amountCol)
-	orderPrint += "Срок: " + fmt.Sprintln(order.deadline)
-	orderPrint += "Комментарий: " + fmt.Sprintln(order.comment)
+	orderPrint += "Количество: " + fmt.Sprintln(order.Amount)
+	orderPrint += "Количество цветов: " + fmt.Sprintln(order.Cols)
+	orderPrint += "Срок: " + fmt.Sprintln(order.Deadline)
+	orderPrint += "Комментарий: " + fmt.Sprintln(order.Comment)
 	return orderPrint
 }
 
@@ -30,15 +30,15 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "")
 		switch update.CallbackQuery.Data {
 		case "T-shirt", "Hoodie", "Sweatshirt":
-			newOrder.productName = update.CallbackQuery.Data
+			newOrder.ProductName = update.CallbackQuery.Data
 			msg.Text = "Расскажи какой формат заказа тебе нужен"
 			msg.ReplyMarkup = orderTypeKeyboard
 			break
 		case "Blank", "Sewing":
-			newOrder.orderType = update.CallbackQuery.Data
-			if newOrder.orderType == "Sewing" {
+			newOrder.Type = update.CallbackQuery.Data
+			if newOrder.Type == "Sewing" {
 				msg.Text = "Уточним некоторые детали. "
-				switch newOrder.productName {
+				switch newOrder.ProductName {
 				case "T-shirt":
 					msg.Text += "Футболки какого размера нужны?"
 					msg.ReplyMarkup = tshirt
@@ -50,15 +50,15 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 					msg.ReplyMarkup = sweatshirt
 				}
 			} else {
-				newOrder.amountCol = 1
+				newOrder.Cols = 1
 				msg.Text = "Сколько нужно штук?"
 			}
 		case "hoodieReglan", "hoodieOversize", "hoodieDefault":
-			newOrder.features = append(newOrder.features, update.CallbackQuery.Data[len("hoodie"):])
+			newOrder.Features = append(newOrder.Features, update.CallbackQuery.Data[len("hoodie"):])
 			msg.Text = "Еще немного"
 			msg.ReplyMarkup = pocket
 		case "Reglan", "Set-in", "Default", "Oversize", "pocketSewing", "pocketSet-in":
-			newOrder.features = append(newOrder.features, update.CallbackQuery.Data)
+			newOrder.Features = append(newOrder.Features, update.CallbackQuery.Data)
 			msg.Text = "Разберемся с количеством цветов. Сколько их будет? [1-8]"
 		case "Edit":
 			msg.Text = "Что будем менять?"
@@ -86,11 +86,11 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 	if update.Message != nil {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 		if update.Message.Photo != nil {
-			if newOrder.layout == "" {
-				newOrder.layout = (*update.Message.Photo)[0].FileID
+			if newOrder.Layout == "" {
+				newOrder.Layout = (*update.Message.Photo)[0].FileID
 				msg.Text = "А теперь мокап"
-			} else if newOrder.mockup == "" {
-				newOrder.mockup = (*update.Message.Photo)[0].FileID
+			} else if newOrder.Mockup == "" {
+				newOrder.Mockup = (*update.Message.Photo)[0].FileID
 				msg.Text = "Что по датам? Когда все должно быть готово?"
 			} else {
 				msg.Text = "Эй, хватит ломать меня! Что с датами?"
@@ -102,15 +102,15 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 				msg.Text = "Окей, давай определимся какой же тип изделия тебе нужен. Футболки, худи или свитшоты?"
 				msg.ReplyMarkup = typeKeyboard
 			} else if number, err := strconv.Atoi(update.Message.Text); err == nil {
-				if (newOrder.orderType == "Sewing" && newOrder.amountCol == 0) || newOrder.edit {
-					newOrder.amountCol = number
+				if (newOrder.Type == "Sewing" && newOrder.Cols == 0) || newOrder.edit {
+					newOrder.Cols = number
 					if newOrder.edit {
 						msg.ReplyMarkup = editFieldPicker
 					} else {
 						msg.Text = "Сколько штук нужно?"
 					}
-				} else if newOrder.amount == 0 || newOrder.edit {
-					newOrder.amount = number
+				} else if newOrder.Amount == 0 || newOrder.edit {
+					newOrder.Amount = number
 					if newOrder.edit {
 						msg.ReplyMarkup = editFieldPicker
 					} else {
@@ -119,11 +119,11 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 				}
 
 			} else {
-				if newOrder.deadline == "" {
-					newOrder.deadline = update.Message.Text
+				if newOrder.Deadline == "" {
+					newOrder.Deadline = update.Message.Text
 					msg.Text = "Последний шаг! Есть какие-то особенные комментарии?"
-				} else if newOrder.comment == "" {
-					newOrder.comment = update.Message.Text
+				} else if newOrder.Comment == "" {
+					newOrder.Comment = update.Message.Text
 					msg.Text = "Готово. Давай проверим, что все верно.\n"
 					msg.Text += printOrder(newOrder)
 					msg.ReplyMarkup = editPicker

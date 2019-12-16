@@ -6,93 +6,93 @@ var availableCommand = map[string]string{
 	"/start": "Start the bot",
 }
 
-var orderTypeKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Пошив", "Sewing"),
-		tgbotapi.NewInlineKeyboardButtonData("Бланк", "Blank"),
+var orderTypeKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Пошив", "Sewing"),
+		tgbotapi.NewKeyboardButton("Бланк", "Blank"),
 	),
 )
 
-var typeKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Футболка", "T-shirt"),
-		tgbotapi.NewInlineKeyboardButtonData("Худи", "Hoodie"),
-		tgbotapi.NewInlineKeyboardButtonData("Свитшот", "Sweatshirt"),
+var typeKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Футболка", "T-shirt"),
+		tgbotapi.NewKeyboardButton("Худи", "Hoodie"),
+		tgbotapi.NewKeyboardButton("Свитшот", "Sweatshirt"),
 	),
 )
 
-var tshirt = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Обычная", "Default"),
-		tgbotapi.NewInlineKeyboardButtonData("Оверсайз", "Oversize"),
+var tshirt = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Обычная", "Default"),
+		tgbotapi.NewKeyboardButton("Оверсайз", "Oversize"),
 	),
 )
 
-var sweatshirt = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Втачной рукав", "Set-in"),
-		tgbotapi.NewInlineKeyboardButtonData("Реглан", "Reglan"),
+var sweatshirt = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Втачной рукав", "Set-in"),
+		tgbotapi.NewKeyboardButton("Реглан", "Reglan"),
 	),
 )
 
-var hoodie = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Обычное", "hoodieDefault"),
-		tgbotapi.NewInlineKeyboardButtonData("Реглан", "hoodieReglan"),
-		tgbotapi.NewInlineKeyboardButtonData("Оверсайз", "hoodieOversize"),
+var hoodie = tgbotapi.keyboardNewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Обычное", "hoodieDefault"),
+		tgbotapi.NewKeyboardButton("Реглан", "hoodieReglan"),
+		tgbotapi.NewKeyboardButton("Оверсайз", "hoodieOversize"),
 	),
 )
 
-var pocket = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Нашив карманов", "pocketSewing"),
-		tgbotapi.NewInlineKeyboardButtonData("Втачной карман", "pocketSet-in"),
+var pocket = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Нашив карманов", "pocketSewing"),
+		tgbotapi.NewKeyboardButton("Втачной карман", "pocketSet-in"),
 	),
 )
 
-var colorNumKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("1", "1"),
-		tgbotapi.NewInlineKeyboardButtonData("2", "2"),
-		tgbotapi.NewInlineKeyboardButtonData("3", "3"),
-		tgbotapi.NewInlineKeyboardButtonData("4", "4"),
+var colorNumKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("1", "1"),
+		tgbotapi.NewKeyboardButton("2", "2"),
+		tgbotapi.NewKeyboardButton("3", "3"),
+		tgbotapi.NewKeyboardButton("4", "4"),
 	),
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("5", "5"),
-		tgbotapi.NewInlineKeyboardButtonData("6", "6"),
-		tgbotapi.NewInlineKeyboardButtonData("7", "7"),
-		tgbotapi.NewInlineKeyboardButtonData("8", "8"),
-	),
-)
-
-var editPicker = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Все верно", "Finish"),
-		tgbotapi.NewInlineKeyboardButtonData("Хочу изменить", "Edit"),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("5", "5"),
+		tgbotapi.NewKeyboardButton("6", "6"),
+		tgbotapi.NewKeyboardButton("7", "7"),
+		tgbotapi.NewKeyboardButton("8", "8"),
 	),
 )
 
-var editFieldPicker = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Количество", "1"),
-		tgbotapi.NewInlineKeyboardButtonData("Количество цветов", "2"),
-		//tgbotapi.NewInlineKeyboardButtonData("Сроки", "5"),
+var editPicker = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Все верно", "Finish"),
+		tgbotapi.NewKeyboardButton("Хочу изменить", "Edit"),
 	),
-	//tgbotapi.NewInlineKeyboardRow(
-	//	tgbotapi.NewInlineKeyboardButtonData("Макет", "3"),
-	//	tgbotapi.NewInlineKeyboardButtonData("Мокап", "4"),
-	//	tgbotapi.NewInlineKeyboardButtonData("Комментарий", "6"),
+)
+
+var editFieldPicker = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Количество", "1"),
+		tgbotapi.NewKeyboardButton("Количество цветов", "2"),
+		//tgbotapi.NewKeyboardButton("Сроки", "5"),
+	),
+	//tgbotapi.NewKeyboardButtonRow(
+	//	tgbotapi.NewKeyboardButton("Макет", "3"),
+	//	tgbotapi.NewKeyboardButton("Мокап", "4"),
+	//	tgbotapi.NewKeyboardButton("Комментарий", "6"),
 	//),
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Показать заказ", "editPrint"),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Показать заказ", "editPrint"),
 	),
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Все верно", "Finish"),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Все верно", "Finish"),
 	),
 )
-var finishKeyboard = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Оформить еще один заказ", "New"),
-		tgbotapi.NewInlineKeyboardButtonData("Закончить", "End"),
+var finishKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Оформить еще один заказ", "New"),
+		tgbotapi.NewKeyboardButton("Закончить", "End"),
 	),
 )

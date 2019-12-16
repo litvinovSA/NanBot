@@ -1,45 +1,42 @@
 package main
 
 import (
-	"context"
-	"github.com/segmentio/ksuid"
+	"github.com/google/uuid"
 )
 
 type Order struct {
-	id           ksuid.KSUID
-	orderType    string
-	productName  string
-	features     []string
-	size         string
-	amount       int
-	amountCol    int
-	mockup       string
-	layout       string
-	customerTgID string
-	customerName string
-	deadline     string
-	comment      string
-	edit         bool
+	id          uuid.UUID      `db: orderid`
+	Type        string   `db: type`
+	ProductName string   `db: productname`
+	Features    []string `db: Features`
+	Amount      int      `db: Amount`
+	Cols        int      `db: cols`
+	Mockup      string   `db: Mockup`
+	Layout      string   `db: Layout`
+	CustomerID  string   `db: customerid`
+	Deadline    string   `db: Deadline`
+	Comment     string   `db: Comment`
+	State       string   `db: State`
+	edit        bool
 }
 
 var orders = make(map[int64]*Order)
 
 func initOrder() *Order {
 	return &Order{
-		id:           ksuid.New(),
-		orderType:    "",
-		productName:  "",
-		features:     nil,
-		size:         "",
-		amount:       0,
-		amountCol:    0,
-		mockup:       "",
-		layout:       "",
-		customerTgID: "",
-		customerName: "",
-		deadline:     "",
-		comment:      "",
-		edit:         false,
+		id:          uuid.New(),
+		Type:        "",
+		ProductName: "",
+		Features:    nil,
+		Amount:      0,
+		Cols:        0,
+		Mockup:      "",
+		Layout:      "",
+		CustomerID:  "",
+		Deadline:    "",
+		Comment:     "",
+		State:       "new",
+		edit:        false,
 	}
 }
 
@@ -75,7 +72,23 @@ func initOrder() *Order {
 //	}
 //}
 
-func main()  {
-	conn := initConnection()
-	defer conn.Close(context.Background())
+func main() {
+	db := initConnection()
+	order  := Order{
+		id:          uuid.New(),
+		Type:        "Blank",
+		ProductName: "T-shirt",
+		Features:    nil,
+		Amount:      100,
+		Cols:        5,
+		Mockup:      "memkek",
+		Layout:      "memkek",
+		CustomerID:  "@mrdken",
+		Deadline:    "10 april",
+		Comment:     "biba i boba",
+		State:       "new",
+		edit:        false,
+	}
+	putOrder(order, db)
+	db.Close()
 }
