@@ -135,23 +135,40 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 	return tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
 }
 
-func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageConfig {
-	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
-	if update.Message != nil {
-		if update.Message.Photo != nil {
-			//TODO: get photos
-		} else if update.Message.Text != "" {
-			newOrder.state++
-			switch update.Message.Text {
-			case l10n["T-shirt"], l10n["Sweatshirt"], l10n["Hoodie"]:
-				if newOrder.state == 1 {
+//func adminServe(update tgbotapi.Update, id int64) tgbotapi.MessageConfig{
+//	if update.Message != nil {
+//		if update.Message.Text != "" {
+//			switch update {}
+//		}
+//	}
+//}
 
-				} else {
-					msg.ReplyMarkup = typeKeyboard
-					newOrder.state--
-				}
-
-			}
-		}
-	}
-}
+//func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageConfig {
+//	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
+//	if update.Message != nil {
+//		if update.Message.Photo != nil {
+//			//TODO: get photos
+//		} else if update.Message.Text != "" {
+//			newOrder.state++
+//			switch update.Message.Text {
+//			case l10n["T-shirt"], l10n["Sweatshirt"], l10n["Hoodie"]:
+//				if newOrder.state == 1 {
+//					msg.Text = steps["ProdType"]
+//					msg.ReplyMarkup = orderTypeKeyboard
+//				} else {
+//					msg.ReplyMarkup = typeKeyboard
+//					newOrder.state--
+//				}
+//			case l10n["Blank"], l10n["Sewing"]:
+//				if newOrder.state == 2{
+//					if update.Message.Text == l10n["Blank"]{
+//						newOrder.state = 6
+//
+//					}
+//				}
+//			default:
+//
+//			}
+//		}
+//	}
+//}

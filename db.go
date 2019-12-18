@@ -16,18 +16,18 @@ var schema = `
 		
 		CREATE TABLE IF NOT EXISTS orders(
 		id SERIAL primary key,
-		OrderID UUID not null,
-		Type text NOT NULL,
-		ProductName text NOT NULL,
-		Features text,
-		Amount int not null,
-		Cols int not null,
-		Layout text not null,
-		Mockup text not null,
-		Deadline text not null,
-		State text not null,
-		Comment text not null,
-		CustomerID int REFERENCES  orders.customers(CustomerID))
+		orderid UUID not null,
+		type text NOT NULL,
+		productname text NOT NULL,
+		features text,
+		amount int not null,
+		cols int not null,
+		layout text not null,
+		mockup text not null,
+		deadline text not null,
+		state text not null,
+		comment text not null,
+		customerid int REFERENCES  orders.customers(CustomerID))
 `
 
 func initConnection() *sqlx.DB {
@@ -40,8 +40,8 @@ func initConnection() *sqlx.DB {
 }
 
 func getNewOrders(db *sqlx.DB) []Order {
-	var newOrders []Order
-	err := db.Select(&newOrders, ".. WHERE State = $1", "new")
+	newOrders := []Order{}
+	err := db.Select(&newOrders, "SELECT * FROM orders WHERE State = $1", "new")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,7 +93,7 @@ func putOrder(order Order, db *sqlx.DB) {
 		order.Deadline,
 		order.State,
 		order.Comment,
-		order.id)
+		order.orderid)
 	if err != nil {
 		log.Fatal(err)
 	}

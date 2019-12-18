@@ -3,27 +3,28 @@ package main
 import "github.com/google/uuid"
 
 type Order struct {
-	id          uuid.UUID `db: orderid`
-	Type        string    `db: type`
-	ProductName string    `db: productname`
-	Features    []string  `db: Features`
-	Amount      int       `db: Amount`
-	Cols        int       `db: cols`
-	Mockup      string    `db: Mockup`
-	Layout      string    `db: Layout`
-	CustomerID  string    `db: customerid`
-	Deadline    string    `db: Deadline`
-	Comment     string    `db: Comment`
-	State       string    `db: State`
+	id          int       `db: "id"`
+	orderid     uuid.UUID `db: "orderid'"`
+	Type        string    `db: "type"`
+	ProductName string    `db: "productname"`
+	Features    []string  `db: "features"`
+	Amount      int       `db: "amount"`
+	Cols        int       `db: "cols"`
+	Mockup      string    `db: "mockup"`
+	Layout      string    `db: "layout"`
+	CustomerID  string    `db: "customerid"`
+	Deadline    string    `db: "deadline"`
+	Comment     string    `db: "comment"`
+	State       string    `db: "state"`
 	edit        bool
-	state 		int
+	state       int
 }
 
 var orders = make(map[int64]*Order)
 
 func initOrder() *Order {
 	return &Order{
-		id:          uuid.New(),
+		orderid:     uuid.New(),
 		Type:        "",
 		ProductName: "",
 		Features:    nil,
@@ -36,6 +37,6 @@ func initOrder() *Order {
 		Comment:     "",
 		State:       "new",
 		edit:        false,
-		state: 		0,
+		state:       0,
 	}
 }

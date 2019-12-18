@@ -49,6 +49,7 @@ var pocket = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButton("Втачной карман"),
 	),
 )
+
 //
 //var colorNumKeyboard = tgbotapi.NewReplyKeyboard(
 //	tgbotapi.NewKeyboardButtonRow(
@@ -71,18 +72,19 @@ var editPicker = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButton("Хочу изменить"),
 	),
 )
+
 //
 //var editFieldPicker = tgbotapi.NewReplyKeyboard(
 //	tgbotapi.NewKeyboardButtonRow(
 //		tgbotapi.NewKeyboardButton("Количество", "1"),
 //		tgbotapi.NewKeyboardButton("Количество цветов", "2"),
-		//tgbotapi.NewKeyboardButton("Сроки", "5"),
-	//),
-	//tgbotapi.NewKeyboardButtonRow(
-	//	tgbotapi.NewKeyboardButton("Макет", "3"),
-	//	tgbotapi.NewKeyboardButton("Мокап", "4"),
-	//	tgbotapi.NewKeyboardButton("Комментарий", "6"),
-	//),
+//tgbotapi.NewKeyboardButton("Сроки", "5"),
+//),
+//tgbotapi.NewKeyboardButtonRow(
+//	tgbotapi.NewKeyboardButton("Макет", "3"),
+//	tgbotapi.NewKeyboardButton("Мокап", "4"),
+//	tgbotapi.NewKeyboardButton("Комментарий", "6"),
+//),
 //	tgbotapi.NewKeyboardButtonRow(
 //		tgbotapi.NewKeyboardButton("Показать заказ", "editPrint"),
 //	),

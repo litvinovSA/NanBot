@@ -1,9 +1,6 @@
 package main
 
-import (
-	"github.com/google/uuid"
-)
-
+import "fmt"
 
 //func main() {
 //	bot, err := tgbotapi.NewBotAPI("910932452:AAFUsTTegZxiin7oAPJ-D8AImMPfT1EQ2cE")
@@ -39,21 +36,22 @@ import (
 
 func main() {
 	db := initConnection()
-	order := Order{
-		id:          uuid.New(),
-		Type:        "Blank",
-		ProductName: "T-shirt",
-		Features:    nil,
-		Amount:      100,
-		Cols:        5,
-		Mockup:      "memkek",
-		Layout:      "memkek",
-		CustomerID:  "@mrdken",
-		Deadline:    "10 april",
-		Comment:     "biba i boba",
-		State:       "new",
-		edit:        false,
-	}
-	putOrder(order, db)
+	//order := Order{
+	//	orderid:          uuid.New(),
+	//	Type:        "Blank",
+	//	ProductName: "T-shirt",
+	//	Features:    nil,
+	//	Amount:      100,
+	//	Cols:        5,
+	//	Mockup:      "memkek",
+	//	Layout:      "memkek",
+	//	CustomerID:  "@mrdken",
+	//	Deadline:    "10 april",
+	//	Comment:     "biba i boba",
+	//	State:       "new",
+	//	edit:        false,
+	//}
+	//putOrder(order, db)
+	fmt.Println(getNewOrders(db))
 	db.Close()
 }
