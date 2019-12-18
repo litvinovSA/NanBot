@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
+	"github.com/jmoiron/sqlx"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -135,13 +137,29 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 	return tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
 }
 
-//func adminServe(update tgbotapi.Update, id int64) tgbotapi.MessageConfig{
-//	if update.Message != nil {
-//		if update.Message.Text != "" {
-//			switch update {}
-//		}
-//	}
-//}
+func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx.DB) tgbotapi.MessageConfig{
+	if update.Message != nil {
+		if update.Message.Text != "" {
+			msg := tgbotapi.NewMessage(id, "")
+			switch update.Message.Text {
+			case ru2eng["adminNew"]:
+				newOrders := getNewOrders(db)
+				for _, order := range newOrders {
+					msg.Text = printOrder(&order)
+					msg.ReplyMarkup = orderChangeStatus;
+					_, err := bot.Send(msg)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+
+			case ru2eng["adminProgress"]:
+			case ru2eng["adminDone"]:
+			}
+		}
+	}
+	return tgbotapi.NewMessage(id, "Привет, Мастер!")
+}
 
 //func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageConfig {
 //	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")

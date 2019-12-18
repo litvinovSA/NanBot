@@ -26,12 +26,15 @@ var ru2eng = map[string]string{
 	"Обычная":           "Default",
 	"Втачной рукав":     "Set-in",
 	"Реглан":            "Reglan",
-	"pocketSewing":      "Нашив карманов",
-	"pocketSet-in":      "Втачной карман",
-	"Oversize":          "Оверсайз",
-	"hoodieReglan":      "Реглан",
-	"hoodieOversize":    "Оверсайз",
-	"hoodieDefault":     "Обычное",
+	"Нашив карманов":      "pocketSewing",
+	"Втачной карман":      "pocketSet-in",
+	"Оверсайз":          "Oversize",
+	"Реглан худи":      "hoodieReglan",
+	"Оверсайз худи":    "hoodieOversize",
+	"Обычное худи":     "hoodieDefault",
+	"Показать новые":	"adminNew",
+	"Показать сделанные": "adminDone",
+	"Показать в производстве": "adminProgress",
 }
 
 var steps = map[string]string{

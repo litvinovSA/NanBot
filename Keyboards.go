@@ -42,6 +42,20 @@ var hoodie = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButton("Оверсайз"),
 	),
 )
+var adminStart = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Показать новые заказы"),
+		tgbotapi.NewKeyboardButton("Показать в процессе"),
+		tgbotapi.NewKeyboardButton("Показать сделанные"),
+	),
+)
+
+var orderChangeStatus = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("В производство", "Production"),
+		tgbotapi.NewInlineKeyboardButtonData("Выполнен", "Done"),
+		),
+	)
 
 var pocket = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
