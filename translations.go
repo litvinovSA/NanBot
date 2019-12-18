@@ -1,6 +1,6 @@
 package main
 
-var translations = map[string]string{
+var l10n = map[string]string{
 	"Sewing":         "Пошив",
 	"Blank":          "Бланковое изделие",
 	"T-shirt":        "Футболка",
@@ -17,8 +17,33 @@ var translations = map[string]string{
 	"hoodieDefault":  "Обычное",
 }
 
-var types = map[string]string{
-	"type1": "Sweatshirt",
-	"type2": "Hoodie",
-	"type3": "T-shirt",
+var ru2eng = map [string]string{
+	"Пошив": "Sewing",
+	"Бланковое изделие": "Blank",
+	"Футболка":        "T-shirt",
+	"Худи":         "Hoodie",
+	"Свитшот""Sweatshirt":     "Свитшот",
+	"Обычная""Default":        ,
+	"Втачной рукав""Set-in":         ,
+	"Реглан""Reglan":         ,
+	"pocketSewing":   "Нашив карманов",
+	"pocketSet-in":   "Втачной карман",
+	"Oversize":       "Оверсайз",
+	"hoodieReglan":   "Реглан",
+	"hoodieOversize": "Оверсайз",
+	"hoodieDefault":  "Обычное",
+}
+
+var steps = map[string]string{
+	"Greeting" : "Привет, оформляем заказ!",
+	"Product"  : "Выбери тип изделия",
+	"ProdType" : "Расскажи, какой формат заказа тебе нужен?",
+	"Feature1" : "Какие будет особенности?",
+	"Feature2" : "",
+	"Cols" : "" ,
+	"Amount" : "",
+	"Mock": "",
+	"Layout": "",
+	"Deadline": "",
+	"Comment" : "",
 }

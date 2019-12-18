@@ -39,28 +39,28 @@ func initConnection() *sqlx.DB {
 	return db
 }
 
-func getNewOrders(db *sqlx.DB) []Order{
+func getNewOrders(db *sqlx.DB) []Order {
 	var newOrders []Order
 	err := db.Select(&newOrders, ".. WHERE State = $1", "new")
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 	return newOrders
 }
 
-func getInProgresOrders(db *sqlx.DB) []Order{
+func getInProgresOrders(db *sqlx.DB) []Order {
 	var newOrders []Order
 	err := db.Select(&newOrders, ".. WHERE State = $1", "inprogress")
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 	return newOrders
 }
 
-func getDoneOrders(db *sqlx.DB) []Order{
+func getDoneOrders(db *sqlx.DB) []Order {
 	var newOrders []Order
 	err := db.Select(&newOrders, ".. WHERE State = $1", "done")
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 	return newOrders
@@ -83,7 +83,7 @@ func putOrder(order Order, db *sqlx.DB) {
 	if err != nil {
 		log.Println("Existing customer: ", err)
 	}
-	res, err := db.Exec("INSERT INTO orders ("+ fields +") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+	res, err := db.Exec("INSERT INTO orders ("+fields+") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
 		order.Type,
 		order.ProductName,
 		order.Amount,
@@ -94,7 +94,7 @@ func putOrder(order Order, db *sqlx.DB) {
 		order.State,
 		order.Comment,
 		order.id)
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 	res.LastInsertId()

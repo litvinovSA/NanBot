@@ -4,41 +4,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type Order struct {
-	id          uuid.UUID      `db: orderid`
-	Type        string   `db: type`
-	ProductName string   `db: productname`
-	Features    []string `db: Features`
-	Amount      int      `db: Amount`
-	Cols        int      `db: cols`
-	Mockup      string   `db: Mockup`
-	Layout      string   `db: Layout`
-	CustomerID  string   `db: customerid`
-	Deadline    string   `db: Deadline`
-	Comment     string   `db: Comment`
-	State       string   `db: State`
-	edit        bool
-}
-
-var orders = make(map[int64]*Order)
-
-func initOrder() *Order {
-	return &Order{
-		id:          uuid.New(),
-		Type:        "",
-		ProductName: "",
-		Features:    nil,
-		Amount:      0,
-		Cols:        0,
-		Mockup:      "",
-		Layout:      "",
-		CustomerID:  "",
-		Deadline:    "",
-		Comment:     "",
-		State:       "new",
-		edit:        false,
-	}
-}
 
 //func main() {
 //	bot, err := tgbotapi.NewBotAPI("910932452:AAFUsTTegZxiin7oAPJ-D8AImMPfT1EQ2cE")
@@ -74,7 +39,7 @@ func initOrder() *Order {
 
 func main() {
 	db := initConnection()
-	order  := Order{
+	order := Order{
 		id:          uuid.New(),
 		Type:        "Blank",
 		ProductName: "T-shirt",

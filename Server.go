@@ -9,12 +9,12 @@ import (
 
 func printOrder(order *Order) string {
 	var orderPrint string
-	orderPrint += "Тип заказа: " + fmt.Sprintln(translations[order.Type])
-	orderPrint += "Изделие: " + fmt.Sprintln(translations[order.ProductName])
+	orderPrint += "Тип заказа: " + fmt.Sprintln(l10n[order.Type])
+	orderPrint += "Изделие: " + fmt.Sprintln(l10n[order.ProductName])
 	if len(order.Features) != 0 {
 		orderPrint += "Особенности: "
 		for _, feature := range order.Features {
-			orderPrint += translations[feature] + ", "
+			orderPrint += l10n[feature] + ", "
 		}
 		orderPrint += "\n"
 	}
@@ -62,10 +62,10 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 			msg.Text = "Разберемся с количеством цветов. Сколько их будет? [1-8]"
 		case "Edit":
 			msg.Text = "Что будем менять?"
-			msg.ReplyMarkup = editFieldPicker
+			//msg.ReplyMarkup = editFieldPicker
 		case "editPrint":
 			msg.Text = "Вот твой заказ: \n" + printOrder(newOrder)
-			msg.ReplyMarkup = editFieldPicker
+			//msg.ReplyMarkup = editFieldPicker
 		case "1":
 			msg.Text = "Сколько штук?"
 		case "2":
@@ -105,14 +105,14 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 				if (newOrder.Type == "Sewing" && newOrder.Cols == 0) || newOrder.edit {
 					newOrder.Cols = number
 					if newOrder.edit {
-						msg.ReplyMarkup = editFieldPicker
+						//msg.ReplyMarkup = editFieldPicker
 					} else {
 						msg.Text = "Сколько штук нужно?"
 					}
 				} else if newOrder.Amount == 0 || newOrder.edit {
 					newOrder.Amount = number
 					if newOrder.edit {
-						msg.ReplyMarkup = editFieldPicker
+						//msg.ReplyMarkup = editFieldPicker
 					} else {
 						msg.Text = "Теперь мне нужно фото макета"
 					}
@@ -133,4 +133,25 @@ func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageCo
 		}
 	}
 	return tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
+}
+
+func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageConfig {
+	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
+	if update.Message != nil {
+		if update.Message.Photo != nil {
+			//TODO: get photos
+		} else if update.Message.Text != "" {
+			newOrder.state++
+			switch update.Message.Text {
+			case l10n["T-shirt"], l10n["Sweatshirt"], l10n["Hoodie"]:
+				if newOrder.state == 1 {
+
+				} else {
+					msg.ReplyMarkup = typeKeyboard
+					newOrder.state--
+				}
+
+			}
+		}
+	}
 }
