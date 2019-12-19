@@ -54,8 +54,8 @@ var orderChangeStatus = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("В производство", "Production"),
 		tgbotapi.NewInlineKeyboardButtonData("Выполнен", "Done"),
-		),
-	)
+	),
+)
 
 var pocket = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(

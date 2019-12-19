@@ -38,7 +38,7 @@ func initConnection() *sqlx.DB {
 	return db
 }
 
-func getNewOrders(db *sqlx.DB) []Order{
+func getNewOrders(db *sqlx.DB) []Order {
 	newOrders := []Order{}
 	err := db.Select(&newOrders, "SELECT * FROM orders WHERE state=$1", "new")
 	if err != nil {
@@ -74,7 +74,7 @@ func moveInProgressToDone(id int64) {
 }
 
 func putOrder(order Order, db *sqlx.DB) {
-	fmt.Println(printOrder(&order))
+	fmt.Println(stringifyOrder(&order))
 	fields := "type, productname,  Amount, cols, Layout, Mockup, Deadline, State, Comment, orderid, customerid"
 	fmt.Println(&order.CustomerID)
 
@@ -94,7 +94,7 @@ func putOrder(order Order, db *sqlx.DB) {
 		order.Comment,
 		order.Orderid,
 		order.CustomerID,
-)
+	)
 	if err != nil {
 		log.Fatal(err)
 	}

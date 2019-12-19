@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 )
 
@@ -9,7 +10,7 @@ type Order struct {
 	Orderid     uuid.UUID `db:"orderid"`
 	Type        string    `db:"type"`
 	ProductName string    `db:"productname"`
-	Features    []string  `db:"features"`
+	Features    string    `db:"features"`
 	Amount      int       `db:"amount"`
 	Cols        int       `db:"cols"`
 	Mockup      string    `db:"mockup"`
@@ -29,7 +30,7 @@ func initOrder() *Order {
 		Orderid:     uuid.New(),
 		Type:        "",
 		ProductName: "",
-		Features:    nil,
+		Features:    "",
 		Amount:      0,
 		Cols:        0,
 		Mockup:      "",
@@ -41,4 +42,18 @@ func initOrder() *Order {
 		edit:        false,
 		state:       0,
 	}
+}
+
+func stringifyOrder(order *Order) string {
+	var orderPrint string
+	orderPrint += "Тип заказа: " + fmt.Sprintln(l10n[order.Type])
+	orderPrint += "Изделие: " + fmt.Sprintln(l10n[order.ProductName])
+	if len(order.Features) != 0 {
+		orderPrint += "Особенности: " + order.Features
+	}
+	orderPrint += "Количество: " + fmt.Sprintln(order.Amount)
+	orderPrint += "Количество цветов: " + fmt.Sprintln(order.Cols)
+	orderPrint += "Срок: " + fmt.Sprintln(order.Deadline)
+	orderPrint += "Комментарий: " + fmt.Sprintln(order.Comment)
+	return orderPrint
 }

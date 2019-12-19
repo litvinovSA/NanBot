@@ -1,143 +1,38 @@
 package main
 
 import (
-	"fmt"
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/jmoiron/sqlx"
 	"log"
+	"net/url"
 	"strconv"
-	"strings"
 )
 
-func printOrder(order *Order) string {
-	var orderPrint string
-	orderPrint += "Тип заказа: " + fmt.Sprintln(l10n[order.Type])
-	orderPrint += "Изделие: " + fmt.Sprintln(l10n[order.ProductName])
-	if len(order.Features) != 0 {
-		orderPrint += "Особенности: "
-		for _, feature := range order.Features {
-			orderPrint += l10n[feature] + ", "
-		}
-		orderPrint += "\n"
+const (
+	stateHello    = iota
+	stateProduct  = iota
+	stateProdtype = iota
+	stateFeature1 = iota
+	stateFeature2 = iota
+	stateCols     = iota
+	stateAmount   = iota
+	stateMock     = iota
+	stateLayout   = iota
+	stateDeadline = iota
+	stateComment  = iota
+	stateFin      = iota
+)
+
+func isValidUrl(toTest string) bool {
+	_, err := url.ParseRequestURI(toTest)
+	if err != nil {
+		return false
+	} else {
+		return true
 	}
-	orderPrint += "Количество: " + fmt.Sprintln(order.Amount)
-	orderPrint += "Количество цветов: " + fmt.Sprintln(order.Cols)
-	orderPrint += "Срок: " + fmt.Sprintln(order.Deadline)
-	orderPrint += "Комментарий: " + fmt.Sprintln(order.Comment)
-	return orderPrint
 }
 
-func Serve(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageConfig {
-	if update.CallbackQuery != nil {
-		msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "")
-		switch update.CallbackQuery.Data {
-		case "T-shirt", "Hoodie", "Sweatshirt":
-			newOrder.ProductName = update.CallbackQuery.Data
-			msg.Text = "Расскажи какой формат заказа тебе нужен"
-			msg.ReplyMarkup = orderTypeKeyboard
-			break
-		case "Blank", "Sewing":
-			newOrder.Type = update.CallbackQuery.Data
-			if newOrder.Type == "Sewing" {
-				msg.Text = "Уточним некоторые детали. "
-				switch newOrder.ProductName {
-				case "T-shirt":
-					msg.Text += "Футболки какого размера нужны?"
-					msg.ReplyMarkup = tshirt
-				case "Hoodie":
-					msg.Text = "Выбирай варианты:"
-					msg.ReplyMarkup = hoodie
-				case "Sweatshirt":
-					msg.Text += "Что с рукавами?"
-					msg.ReplyMarkup = sweatshirt
-				}
-			} else {
-				newOrder.Cols = 1
-				msg.Text = "Сколько нужно штук?"
-			}
-		case "hoodieReglan", "hoodieOversize", "hoodieDefault":
-			newOrder.Features = append(newOrder.Features, update.CallbackQuery.Data[len("hoodie"):])
-			msg.Text = "Еще немного"
-			msg.ReplyMarkup = pocket
-		case "Reglan", "Set-in", "Default", "Oversize", "pocketSewing", "pocketSet-in":
-			newOrder.Features = append(newOrder.Features, update.CallbackQuery.Data)
-			msg.Text = "Разберемся с количеством цветов. Сколько их будет? [1-8]"
-		case "Edit":
-			msg.Text = "Что будем менять?"
-			//msg.ReplyMarkup = editFieldPicker
-		case "editPrint":
-			msg.Text = "Вот твой заказ: \n" + printOrder(newOrder)
-			//msg.ReplyMarkup = editFieldPicker
-		case "1":
-			msg.Text = "Сколько штук?"
-		case "2":
-			msg.Text = "Сколько цветов?"
-		case "3":
-		case "4":
-		case "5":
-		case "6":
-		case "Finish":
-			msg.Text = "Заказ принят. \n Оформить еще один?"
-			msg.ReplyMarkup = finishKeyboard
-		case "End":
-			msg.Text = "Спасибо за заказ!"
-		}
-		return msg
-	}
-
-	if update.Message != nil {
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		if update.Message.Photo != nil {
-			if newOrder.Layout == "" {
-				newOrder.Layout = (*update.Message.Photo)[0].FileID
-				msg.Text = "А теперь мокап"
-			} else if newOrder.Mockup == "" {
-				newOrder.Mockup = (*update.Message.Photo)[0].FileID
-				msg.Text = "Что по датам? Когда все должно быть готово?"
-			} else {
-				msg.Text = "Эй, хватит ломать меня! Что с датами?"
-			}
-			return msg
-		}
-		if update.Message.Text != "" {
-			if strings.ToLower(update.Message.Text) == "new" {
-				msg.Text = "Окей, давай определимся какой же тип изделия тебе нужен. Футболки, худи или свитшоты?"
-				msg.ReplyMarkup = typeKeyboard
-			} else if number, err := strconv.Atoi(update.Message.Text); err == nil {
-				if (newOrder.Type == "Sewing" && newOrder.Cols == 0) || newOrder.edit {
-					newOrder.Cols = number
-					if newOrder.edit {
-						//msg.ReplyMarkup = editFieldPicker
-					} else {
-						msg.Text = "Сколько штук нужно?"
-					}
-				} else if newOrder.Amount == 0 || newOrder.edit {
-					newOrder.Amount = number
-					if newOrder.edit {
-						//msg.ReplyMarkup = editFieldPicker
-					} else {
-						msg.Text = "Теперь мне нужно фото макета"
-					}
-				}
-
-			} else {
-				if newOrder.Deadline == "" {
-					newOrder.Deadline = update.Message.Text
-					msg.Text = "Последний шаг! Есть какие-то особенные комментарии?"
-				} else if newOrder.Comment == "" {
-					newOrder.Comment = update.Message.Text
-					msg.Text = "Готово. Давай проверим, что все верно.\n"
-					msg.Text += printOrder(newOrder)
-					msg.ReplyMarkup = editPicker
-				}
-			}
-			return msg
-		}
-	}
-	return tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
-}
-
-func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx.DB) tgbotapi.MessageConfig{
+func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx.DB) tgbotapi.MessageConfig {
 	if update.Message != nil {
 		if update.Message.Text != "" {
 			msg := tgbotapi.NewMessage(id, "")
@@ -145,8 +40,8 @@ func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx
 			case ru2eng["adminNew"]:
 				newOrders := getNewOrders(db)
 				for _, order := range newOrders {
-					msg.Text = printOrder(&order)
-					msg.ReplyMarkup = orderChangeStatus;
+					msg.Text = stringifyOrder(&order)
+					msg.ReplyMarkup = orderChangeStatus
 					_, err := bot.Send(msg)
 					if err != nil {
 						log.Fatal(err)
@@ -161,32 +56,115 @@ func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx
 	return tgbotapi.NewMessage(id, "Привет, Мастер!")
 }
 
-//func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageConfig {
-//	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
-//	if update.Message != nil {
-//		if update.Message.Photo != nil {
-//			//TODO: get photos
-//		} else if update.Message.Text != "" {
-//			newOrder.state++
-//			switch update.Message.Text {
-//			case l10n["T-shirt"], l10n["Sweatshirt"], l10n["Hoodie"]:
-//				if newOrder.state == 1 {
-//					msg.Text = steps["ProdType"]
-//					msg.ReplyMarkup = orderTypeKeyboard
-//				} else {
-//					msg.ReplyMarkup = typeKeyboard
-//					newOrder.state--
-//				}
-//			case l10n["Blank"], l10n["Sewing"]:
-//				if newOrder.state == 2{
-//					if update.Message.Text == l10n["Blank"]{
-//						newOrder.state = 6
-//
-//					}
-//				}
-//			default:
-//
-//			}
-//		}
-//	}
-//}
+func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageConfig {
+	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
+	if update.Message != nil {
+		if update.Message.Photo != nil {
+			switch newOrder.state {
+			case stateLayout:
+				newOrder.Layout = (*update.Message.Photo)[0].FileID
+				msg.Text = steps["Mock"]
+				newOrder.state = stateMock
+			case stateMock:
+				newOrder.Mockup = (*update.Message.Photo)[0].FileID
+				msg.Text = steps["Deadline"]
+				newOrder.state = stateDeadline
+			}
+		} else if update.Message.Text != "" {
+			switch update.Message.Text {
+			case l10n["T-shirt"], l10n["Sweatshirt"], l10n["Hoodie"]:
+				if newOrder.state == stateProduct {
+					newOrder.ProductName = ru2eng[update.Message.Text]
+					msg.Text = steps["ProdType"]
+					msg.ReplyMarkup = orderTypeKeyboard
+					newOrder.state = stateProdtype
+				}
+			case l10n["Blank"], l10n["Sewing"]:
+				if newOrder.state == stateProdtype {
+					newOrder.Type = ru2eng[update.Message.Text]
+					if update.Message.Text == l10n["Blank"] {
+						newOrder.state = stateCols
+						msg.Text = steps["Cols"]
+					} else {
+						msg.Text = steps["Feature1"]
+						switch newOrder.ProductName {
+						case "T-shirt":
+							newOrder.state = stateFeature1
+							msg.Text = steps["Feature1"]
+							msg.ReplyMarkup = tshirt
+						case "Sweatshirt":
+							newOrder.state = stateFeature1
+							msg.Text = steps["Feature1"]
+							msg.ReplyMarkup = sweatshirt
+						case "Hoodie":
+							newOrder.state = stateFeature2
+							msg.Text = steps["Feature2"]
+							msg.ReplyMarkup = hoodie
+						}
+					}
+				}
+			default:
+				switch newOrder.state {
+				case stateFeature1:
+					if update.Message.Text == l10n["Default"] ||
+						update.Message.Text == l10n["Oversize"] ||
+						update.Message.Text == l10n["Set-in"] ||
+						update.Message.Text == l10n["Reglan"] ||
+						update.Message.Text == l10n["pocketSewing"] ||
+						update.Message.Text == l10n["pocketSet-in"] {
+						newOrder.Features += ru2eng[update.Message.Text]
+						msg.Text = steps["Cols"]
+						newOrder.state = stateCols
+					}
+				case stateFeature2:
+					if update.Message.Text == l10n["hoodieDefault"] ||
+						update.Message.Text == l10n["Reglan"] ||
+						update.Message.Text == l10n["Oversize"] {
+						newOrder.Features += ru2eng[update.Message.Text]
+						msg.Text = steps["Feature1"]
+						newOrder.state = stateFeature1
+					}
+				case stateCols:
+					// here we can recieve photo or numbers
+					if number, err := strconv.Atoi(update.Message.Text); err == nil {
+						if number > 8 || number < 1 {
+							msg.Text = "Хеллоу! От одного до восьми, ёпта!"
+						} else {
+							newOrder.Cols = number
+							msg.Text = steps["Amount"]
+							newOrder.state = stateAmount
+						}
+					}
+				case stateAmount:
+					if number, err := strconv.Atoi(update.Message.Text); err == nil {
+						newOrder.Amount = number
+						msg.Text = steps["Amount"]
+						newOrder.state = stateLayout
+					}
+				case stateLayout:
+					if isValidUrl(update.Message.Text) {
+						newOrder.Layout = update.Message.Text
+						msg.Text = steps["Mock"]
+						newOrder.state = stateMock
+					}
+				case stateMock:
+					if isValidUrl(update.Message.Text) {
+						newOrder.Mockup = update.Message.Text
+						msg.Text = steps["Deadline"]
+						newOrder.state = stateDeadline
+					}
+				case stateDeadline:
+					newOrder.Deadline = update.Message.Text
+					msg.Text = steps["Comment"]
+					newOrder.state = stateComment
+				case stateComment:
+					newOrder.Comment = update.Message.Text
+					msg.Text = "Вот твой заказ: \n" + stringifyOrder(newOrder)
+					newOrder.state = stateFin
+					msg.ReplyMarkup = finishKeyboard
+				}
+			}
+		}
+	}
+	return msg
+}
