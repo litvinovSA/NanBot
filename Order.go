@@ -25,7 +25,7 @@ type Order struct {
 
 var orders = make(map[int64]*Order)
 
-func initOrder() *Order {
+func initOrder(username string) *Order {
 	return &Order{
 		Orderid:     uuid.New(),
 		Type:        "",
@@ -35,22 +35,25 @@ func initOrder() *Order {
 		Cols:        0,
 		Mockup:      "",
 		Layout:      "",
-		CustomerID:  "",
+		CustomerID:  username,
 		Deadline:    "",
 		Comment:     "",
 		State:       "new",
 		edit:        false,
-		state:       0,
+		state:		 stateHello,
 	}
 }
 
 func stringifyOrder(order *Order) string {
 	var orderPrint string
+	orderPrint += "ID: " + fmt.Sprintln(order.Id)
+	orderPrint += "Username: @" + fmt.Sprintln(order.CustomerID)
 	orderPrint += "Тип заказа: " + fmt.Sprintln(l10n[order.Type])
 	orderPrint += "Изделие: " + fmt.Sprintln(l10n[order.ProductName])
 	if len(order.Features) != 0 {
 		orderPrint += "Особенности: " + order.Features
 	}
+	orderPrint += "\n"
 	orderPrint += "Количество: " + fmt.Sprintln(order.Amount)
 	orderPrint += "Количество цветов: " + fmt.Sprintln(order.Cols)
 	orderPrint += "Срок: " + fmt.Sprintln(order.Deadline)

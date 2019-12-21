@@ -5,6 +5,7 @@ import (
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 	"log"
+	"strconv"
 )
 
 var schema = `
@@ -26,7 +27,7 @@ var schema = `
 		"deadline" text not null,
 		"state" text not null,
 		"comment" text not null,
-		"customerid" int )
+		"customerid" text )
 `
 
 func initConnection() *sqlx.DB {
@@ -65,12 +66,18 @@ func getDoneOrders(db *sqlx.DB) []Order {
 	return newOrders
 }
 
-func moveNewToInProgress(id int64) {
-
+func moveToProgress(id int, db *sqlx.DB) {
+	_, err := db.Exec("UPDATE orders SET state = $1 WHERE id = $2","inprogress", strconv.Itoa(id))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
-func moveInProgressToDone(id int64) {
-
+func moveToDone(id int, db *sqlx.DB) {
+	_, err := db.Exec("UPDATE orders SET state = $1 WHERE id = $2", "done", strconv.Itoa(id))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func putOrder(order Order, db *sqlx.DB) {

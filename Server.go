@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -32,31 +33,72 @@ func isValidUrl(toTest string) bool {
 	}
 }
 
+func parseId(order string) int {
+	id, err := strconv.Atoi(strings.Split(strings.Split(order, "\n")[0], " ")[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id
+}
+
 func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx.DB) tgbotapi.MessageConfig {
-	if update.Message != nil {
+	if update.CallbackQuery != nil {
+		switch update.CallbackQuery.Data {
+		case "Done":
+			moveToDone(parseId(update.CallbackQuery.Message.Text), db)
+		case "Production":
+			moveToProgress(parseId(update.CallbackQuery.Message.Text), db)
+		}
+	} else if update.Message != nil {
+
 		if update.Message.Text != "" {
 			msg := tgbotapi.NewMessage(id, "")
 			switch update.Message.Text {
-			case ru2eng["adminNew"]:
+			case "admin", "Admin":
+				msg := tgbotapi.NewMessage(id, "Привет, Мастер!")
+				msg.ReplyMarkup = adminDefault
+				bot.Send(msg)
+			case l10n["adminNew"]:
 				newOrders := getNewOrders(db)
-				for _, order := range newOrders {
+				if len(newOrders) == 0 {
+					msg.Text = "Новых заказов нет. Вы молодец, Senpai! ^-^"
+					bot.Send(msg)
+				} else {
+					for _, order := range newOrders {
+						msg.Text = stringifyOrder(&order)
+						msg.ReplyMarkup = orderChangeStatus
+						_, err := bot.Send(msg)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+				}
+			case l10n["adminProgress"]:
+				orders := getInProgresOrders(db)
+				for _, order := range orders {
 					msg.Text = stringifyOrder(&order)
-					msg.ReplyMarkup = orderChangeStatus
 					_, err := bot.Send(msg)
 					if err != nil {
 						log.Fatal(err)
 					}
 				}
-
-			case ru2eng["adminProgress"]:
-			case ru2eng["adminDone"]:
+			case l10n["adminDone"]:
+				orders := getDoneOrders(db)
+				for _, order := range orders {
+					msg.Text = stringifyOrder(&order)
+					_, err := bot.Send(msg)
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
 			}
 		}
 	}
+
 	return tgbotapi.NewMessage(id, "Привет, Мастер!")
 }
 
-func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.MessageConfig {
+func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tgbotapi.MessageConfig {
 	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
 	if update.Message != nil {
 		if update.Message.Photo != nil {
@@ -84,6 +126,7 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.Messag
 					newOrder.Type = ru2eng[update.Message.Text]
 					if update.Message.Text == l10n["Blank"] {
 						newOrder.state = stateCols
+						msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 						msg.Text = steps["Cols"]
 					} else {
 						msg.Text = steps["Feature1"]
@@ -103,8 +146,16 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.Messag
 						}
 					}
 				}
+			case l10n["Done"]:
+				go putOrder(*newOrder, db)
+				msg.Text = "Спасибо за заказ!"
+				msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 			default:
 				switch newOrder.state {
+				case stateHello:
+					msg.Text = steps["Product"]
+					msg.ReplyMarkup = typeKeyboard
+					newOrder.state = stateProduct
 				case stateFeature1:
 					if update.Message.Text == l10n["Default"] ||
 						update.Message.Text == l10n["Oversize"] ||
@@ -112,16 +163,18 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.Messag
 						update.Message.Text == l10n["Reglan"] ||
 						update.Message.Text == l10n["pocketSewing"] ||
 						update.Message.Text == l10n["pocketSet-in"] {
-						newOrder.Features += ru2eng[update.Message.Text]
+						newOrder.Features += update.Message.Text
 						msg.Text = steps["Cols"]
+						msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 						newOrder.state = stateCols
 					}
 				case stateFeature2:
 					if update.Message.Text == l10n["hoodieDefault"] ||
 						update.Message.Text == l10n["Reglan"] ||
 						update.Message.Text == l10n["Oversize"] {
-						newOrder.Features += ru2eng[update.Message.Text]
+						newOrder.Features += update.Message.Text
 						msg.Text = steps["Feature1"]
+						msg.ReplyMarkup = pocket
 						newOrder.state = stateFeature1
 					}
 				case stateCols:
@@ -138,7 +191,7 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64) tgbotapi.Messag
 				case stateAmount:
 					if number, err := strconv.Atoi(update.Message.Text); err == nil {
 						newOrder.Amount = number
-						msg.Text = steps["Amount"]
+						msg.Text = steps["Layout"]
 						newOrder.state = stateLayout
 					}
 				case stateLayout:

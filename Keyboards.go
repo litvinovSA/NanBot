@@ -64,6 +64,13 @@ var pocket = tgbotapi.NewReplyKeyboard(
 	),
 )
 
+var adminDefault = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("Новые"),
+		tgbotapi.NewKeyboardButton("В производстве"),
+		tgbotapi.NewKeyboardButton("Сделанные"),
+	),
+)
 //
 //var colorNumKeyboard = tgbotapi.NewReplyKeyboard(
 //	tgbotapi.NewKeyboardButtonRow(

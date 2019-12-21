@@ -32,11 +32,11 @@ func main() {
 		} else {
 			id = update.CallbackQuery.Message.Chat.ID
 		}
-		if (update.Message != nil && !update.Message.IsCommand()) || update.CallbackQuery != nil {
-			if update.Message.Chat.UserName == "mrdken" || update.Message.Chat.UserName == "potishebud" {
-				adminServe(&bot, update, id, db)
+		if (update.Message != nil && !update.Message.IsCommand()) || update.CallbackQuery !=nil {
+			if update.Message.Chat.UserName == "mrdken" || update.Message.Chat.UserName == ""{
+				adminServe(bot, update, id, db)
 			}
-			msg := Serve(update, orders[id], id)
+			msg := NewServe(update, orders[id], id, db)
 			_, err = bot.Send(msg)
 			if err != nil {
 				log.Fatal(err)

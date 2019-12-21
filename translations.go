@@ -2,7 +2,7 @@ package main
 
 var l10n = map[string]string{
 	"Sewing":         "Пошив",
-	"Blank":          "Бланковое изделие",
+	"Blank":          "Бланк",
 	"T-shirt":        "Футболка",
 	"Hoodie":         "Худи",
 	"Sweatshirt":     "Свитшот",
@@ -15,6 +15,10 @@ var l10n = map[string]string{
 	"hoodieReglan":   "Реглан",
 	"hoodieOversize": "Оверсайз",
 	"hoodieDefault":  "Обычное",
+	"adminNew": "Новые",
+	"adminProgress": "В производстве",
+	"adminDone": "Сделанные",
+	"Done" : "Закончить",
 }
 
 var ru2eng = map[string]string{
