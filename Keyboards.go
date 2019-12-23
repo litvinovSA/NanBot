@@ -71,21 +71,6 @@ var adminDefault = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButton("Сделанные"),
 	),
 )
-//
-//var colorNumKeyboard = tgbotapi.NewReplyKeyboard(
-//	tgbotapi.NewKeyboardButtonRow(
-//		tgbotapi.NewKeyboardButton("1", "1"),
-//		tgbotapi.NewKeyboardButton("2", "2"),
-//		tgbotapi.NewKeyboardButton("3", "3"),
-//		tgbotapi.NewKeyboardButton("4", "4"),
-//	),
-//	tgbotapi.NewKeyboardButtonRow(
-//		tgbotapi.NewKeyboardButton("5", "5"),
-//		tgbotapi.NewKeyboardButton("6", "6"),
-//		tgbotapi.NewKeyboardButton("7", "7"),
-//		tgbotapi.NewKeyboardButton("8", "8"),
-//	),
-//)
 
 var editPicker = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
@@ -94,28 +79,15 @@ var editPicker = tgbotapi.NewReplyKeyboard(
 	),
 )
 
-//
-//var editFieldPicker = tgbotapi.NewReplyKeyboard(
-//	tgbotapi.NewKeyboardButtonRow(
-//		tgbotapi.NewKeyboardButton("Количество", "1"),
-//		tgbotapi.NewKeyboardButton("Количество цветов", "2"),
-//tgbotapi.NewKeyboardButton("Сроки", "5"),
-//),
-//tgbotapi.NewKeyboardButtonRow(
-//	tgbotapi.NewKeyboardButton("Макет", "3"),
-//	tgbotapi.NewKeyboardButton("Мокап", "4"),
-//	tgbotapi.NewKeyboardButton("Комментарий", "6"),
-//),
-//	tgbotapi.NewKeyboardButtonRow(
-//		tgbotapi.NewKeyboardButton("Показать заказ", "editPrint"),
-//	),
-//	tgbotapi.NewKeyboardButtonRow(
-//		tgbotapi.NewKeyboardButton("Все верно", "Finish"),
-//	),
-//)
 var finishKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton("Оформить еще один заказ"),
 		tgbotapi.NewKeyboardButton("Закончить"),
+	),
+)
+
+var Cols = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(l10n["jpeg"]),
 	),
 )

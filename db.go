@@ -67,7 +67,7 @@ func getDoneOrders(db *sqlx.DB) []Order {
 }
 
 func moveToProgress(id int, db *sqlx.DB) {
-	_, err := db.Exec("UPDATE orders SET state = $1 WHERE id = $2","inprogress", strconv.Itoa(id))
+	_, err := db.Exec("UPDATE orders SET state = $1 WHERE id = $2", "inprogress", strconv.Itoa(id))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,7 +79,17 @@ func moveToDone(id int, db *sqlx.DB) {
 		log.Fatal(err)
 	}
 }
-
+func getNextID(db *sqlx.DB) int{
+	rows, err := db.Query("Select nextval(pg_get_serial_sequence('orders', 'id')) as new_id;")
+	if err != nil {
+		log.Fatal(err)
+	}
+	var id int
+	for rows.Next() {
+		rows.Scan(&id)
+	}
+	return id
+}
 func putOrder(order Order, db *sqlx.DB) {
 	fmt.Println(stringifyOrder(&order))
 	fields := "type, productname,  Amount, cols, Layout, Mockup, Deadline, State, Comment, orderid, customerid"

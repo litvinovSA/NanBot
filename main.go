@@ -24,7 +24,7 @@ func main() {
 		if update.Message != nil {
 			if update.Message.Text != "" {
 				if strings.ToLower(update.Message.Text) == "new" {
-					newOrder = initOrder()
+					newOrder = initOrder(update.Message.From.UserName, getNextID(db))
 					orders[update.Message.Chat.ID] = newOrder
 				}
 			}
@@ -32,14 +32,20 @@ func main() {
 		} else {
 			id = update.CallbackQuery.Message.Chat.ID
 		}
-		if (update.Message != nil && !update.Message.IsCommand()) || update.CallbackQuery !=nil {
-			if update.Message.Chat.UserName == "mrdken" || update.Message.Chat.UserName == ""{
+		if (update.Message != nil && !update.Message.IsCommand()) || update.CallbackQuery != nil {
+			if (update.Message != nil &&
+				(update.Message.Chat.UserName == "potishebud" ||
+					update.Message.Chat.UserName == "mrdken")) ||
+				(update.CallbackQuery != nil &&
+					(update.CallbackQuery.From.UserName == "potishebud" ||
+						update.CallbackQuery.From.UserName == "mrdken")) {
 				adminServe(bot, update, id, db)
-			}
-			msg := NewServe(update, orders[id], id, db)
-			_, err = bot.Send(msg)
-			if err != nil {
-				log.Fatal(err)
+			} else {
+				msg := NewServe(update, orders[id], id, db)
+				_, err = bot.Send(msg)
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 		}
 	}

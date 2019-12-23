@@ -34,9 +34,9 @@ func isValidUrl(toTest string) bool {
 }
 
 func parseId(order string) int {
-	id, err := strconv.Atoi(strings.Split(strings.Split(order, "\n")[0], " ")[1])
+	id, err := strconv.Atoi(strings.Split(strings.Split(order, "\n")[0], ": ")[1])
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	return id
 }
@@ -126,7 +126,7 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 					newOrder.Type = ru2eng[update.Message.Text]
 					if update.Message.Text == l10n["Blank"] {
 						newOrder.state = stateCols
-						msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+						msg.ReplyMarkup = Cols
 						msg.Text = steps["Cols"]
 					} else {
 						msg.Text = steps["Feature1"]
@@ -148,7 +148,7 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 				}
 			case l10n["Done"]:
 				go putOrder(*newOrder, db)
-				msg.Text = "Спасибо за заказ!"
+				msg.Text = steps["Thanks"]
 				msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 			default:
 				switch newOrder.state {
@@ -182,9 +182,16 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 					if number, err := strconv.Atoi(update.Message.Text); err == nil {
 						if number > 8 || number < 1 {
 							msg.Text = "Хеллоу! От одного до восьми, ёпта!"
+						} else if update.Message.Text == l10n["jpeg"] {
+							newOrder.Cols = -1
+							msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 						} else {
 							newOrder.Cols = number
-							msg.Text = steps["Amount"]
+							if newOrder.Type == "Blank" {
+								msg.Text = steps["AmountBlank"]
+							} else {
+								msg.Text = steps["Amount"]
+							}
 							newOrder.state = stateAmount
 						}
 					}
@@ -212,7 +219,7 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 					newOrder.state = stateComment
 				case stateComment:
 					newOrder.Comment = update.Message.Text
-					msg.Text = "Вот твой заказ: \n" + stringifyOrder(newOrder)
+					msg.Text = steps["OrderString"] + stringifyOrder(newOrder)
 					newOrder.state = stateFin
 					msg.ReplyMarkup = finishKeyboard
 				}
