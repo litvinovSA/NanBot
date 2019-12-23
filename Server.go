@@ -22,6 +22,7 @@ const (
 	stateDeadline = iota
 	stateComment  = iota
 	stateFin      = iota
+	stateDone 	  = iota
 )
 
 func isValidUrl(toTest string) bool {
@@ -137,7 +138,10 @@ func getKeyboardAndTextByState(newOrder *Order, id int64) tgbotapi.MessageConfig
 	case stateComment:
 		msg.ReplyMarkup = defaultKeyboard
 	case stateFin:
+		msg.Text += stringifyOrder(newOrder)
 		msg.ReplyMarkup = finishKeyboard
+	case stateDone:
+		msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 	}
 	return msg
 }
@@ -197,8 +201,7 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 				}
 			case l10n["Done"]:
 				go putOrder(*newOrder, db)
-				msg.Text = l10n["Thanks"]
-				msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+				newOrder.state = stateDone
 			default:
 				switch newOrder.state {
 				case stateHello:

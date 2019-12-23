@@ -37,9 +37,7 @@ var typeKeyboard = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButton("Худи"),
 		tgbotapi.NewKeyboardButton("Свитшот"),
 	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
+
 )
 
 var tshirt = tgbotapi.NewReplyKeyboard(
@@ -140,6 +138,9 @@ var Cols = tgbotapi.NewReplyKeyboard(
 	),
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(l10n["jpeg"]),
+	),
+    tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(l10n["dunno"]),
 	),
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(l10n["Back"]),

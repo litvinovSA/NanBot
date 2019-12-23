@@ -34,11 +34,11 @@ func main() {
 		}
 		if (update.Message != nil && !update.Message.IsCommand()) || update.CallbackQuery != nil {
 			if (update.Message != nil &&
-				(update.Message.Chat.UserName == "potishebud" ||
-					update.Message.Chat.UserName == "mrdken")) ||
+				(update.Message.Chat.UserName == "" ||
+					update.Message.Chat.UserName == "")) ||
 				(update.CallbackQuery != nil &&
-					(update.CallbackQuery.From.UserName == "potishebud" ||
-						update.CallbackQuery.From.UserName == "mrdken")) {
+					(update.CallbackQuery.From.UserName == "" ||
+						update.CallbackQuery.From.UserName == "")) {
 				adminServe(bot, update, id, db)
 			} else {
 				msg := NewServe(update, orders[id], id, db)
