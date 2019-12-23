@@ -27,7 +27,7 @@ var orders = make(map[int64]*Order)
 
 func initOrder(username string, nextid int) *Order {
 	return &Order{
-		Id:			 nextid,
+		Id:          nextid,
 		Orderid:     uuid.New(),
 		Type:        "",
 		ProductName: "",

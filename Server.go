@@ -17,8 +17,8 @@ const (
 	stateFeature2 = iota
 	stateCols     = iota
 	stateAmount   = iota
-	stateMock     = iota
 	stateLayout   = iota
+	stateMock     = iota
 	stateDeadline = iota
 	stateComment  = iota
 	stateFin      = iota
@@ -39,6 +39,10 @@ func parseId(order string) int {
 		log.Print(err)
 	}
 	return id
+}
+
+func getPhoto(photoId string) {
+
 }
 
 func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx.DB) tgbotapi.MessageConfig {
@@ -98,6 +102,46 @@ func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx
 	return tgbotapi.NewMessage(id, "Привет, Мастер!")
 }
 
+func getKeyboardAndTextByState(newOrder *Order, id int64) tgbotapi.MessageConfig {
+	msg := tgbotapi.NewMessage(id, l10n["Error"])
+	msg.Text = steps[newOrder.state]
+	switch newOrder.state {
+	case stateProduct:
+		msg.ReplyMarkup = typeKeyboard
+	case stateProdtype:
+		msg.ReplyMarkup = orderTypeKeyboard
+	case stateFeature1:
+		switch newOrder.ProductName {
+		case "Hoodie":
+			msg.ReplyMarkup = hoodie
+		case "T-shirt":
+			msg.ReplyMarkup = tshirt
+		case "Sweatshirt":
+			msg.ReplyMarkup = sweatshirt
+		}
+	case stateFeature2:
+		msg.ReplyMarkup = pocket
+	case stateCols:
+		msg.ReplyMarkup = Cols
+	case stateAmount:
+		if newOrder.Type == "Blank" {
+			msg.Text = l10n["AmountBlank"]
+		}
+		msg.ReplyMarkup = defaultKeyboard
+	case stateLayout:
+		msg.ReplyMarkup = defaultKeyboard
+	case stateMock:
+		msg.ReplyMarkup = defaultKeyboard
+	case stateDeadline:
+		msg.ReplyMarkup = defaultKeyboard
+	case stateComment:
+		msg.ReplyMarkup = defaultKeyboard
+	case stateFin:
+		msg.ReplyMarkup = finishKeyboard
+	}
+	return msg
+}
+
 func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tgbotapi.MessageConfig {
 	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
 	if update.Message != nil {
@@ -105,20 +149,34 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 			switch newOrder.state {
 			case stateLayout:
 				newOrder.Layout = (*update.Message.Photo)[0].FileID
-				msg.Text = steps["Mock"]
 				newOrder.state = stateMock
+				msg = getKeyboardAndTextByState(newOrder, id)
 			case stateMock:
 				newOrder.Mockup = (*update.Message.Photo)[0].FileID
-				msg.Text = steps["Deadline"]
 				newOrder.state = stateDeadline
+				msg = getKeyboardAndTextByState(newOrder, id)
 			}
 		} else if update.Message.Text != "" {
 			switch update.Message.Text {
+			case l10n["Back"]:
+				if newOrder.state == stateCols {
+					if newOrder.Type == "Blank" {
+						newOrder.state = stateProdtype
+					} else {
+						newOrder.state = stateFeature1
+					}
+				} else if newOrder.state == stateFeature1 {
+					if newOrder.ProductName == "Hoodie" {
+						newOrder.state = stateFeature2
+					} else {
+						newOrder.state = stateProdtype
+					}
+				} else {
+					newOrder.state--
+				}
 			case l10n["T-shirt"], l10n["Sweatshirt"], l10n["Hoodie"]:
 				if newOrder.state == stateProduct {
 					newOrder.ProductName = ru2eng[update.Message.Text]
-					msg.Text = steps["ProdType"]
-					msg.ReplyMarkup = orderTypeKeyboard
 					newOrder.state = stateProdtype
 				}
 			case l10n["Blank"], l10n["Sewing"]:
@@ -126,35 +184,24 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 					newOrder.Type = ru2eng[update.Message.Text]
 					if update.Message.Text == l10n["Blank"] {
 						newOrder.state = stateCols
-						msg.ReplyMarkup = Cols
-						msg.Text = steps["Cols"]
 					} else {
-						msg.Text = steps["Feature1"]
 						switch newOrder.ProductName {
 						case "T-shirt":
 							newOrder.state = stateFeature1
-							msg.Text = steps["Feature1"]
-							msg.ReplyMarkup = tshirt
 						case "Sweatshirt":
 							newOrder.state = stateFeature1
-							msg.Text = steps["Feature1"]
-							msg.ReplyMarkup = sweatshirt
 						case "Hoodie":
 							newOrder.state = stateFeature2
-							msg.Text = steps["Feature2"]
-							msg.ReplyMarkup = hoodie
 						}
 					}
 				}
 			case l10n["Done"]:
 				go putOrder(*newOrder, db)
-				msg.Text = steps["Thanks"]
+				msg.Text = l10n["Thanks"]
 				msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 			default:
 				switch newOrder.state {
 				case stateHello:
-					msg.Text = steps["Product"]
-					msg.ReplyMarkup = typeKeyboard
 					newOrder.state = stateProduct
 				case stateFeature1:
 					if update.Message.Text == l10n["Default"] ||
@@ -164,67 +211,49 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 						update.Message.Text == l10n["pocketSewing"] ||
 						update.Message.Text == l10n["pocketSet-in"] {
 						newOrder.Features += update.Message.Text
-						msg.Text = steps["Cols"]
-						msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 						newOrder.state = stateCols
 					}
 				case stateFeature2:
 					if update.Message.Text == l10n["hoodieDefault"] ||
 						update.Message.Text == l10n["Reglan"] ||
 						update.Message.Text == l10n["Oversize"] {
-						newOrder.Features += update.Message.Text
-						msg.Text = steps["Feature1"]
-						msg.ReplyMarkup = pocket
+						newOrder.Features += update.Message.Text + ", "
 						newOrder.state = stateFeature1
 					}
 				case stateCols:
-					// here we can recieve photo or numbers
 					if number, err := strconv.Atoi(update.Message.Text); err == nil {
-						if number > 8 || number < 1 {
-							msg.Text = "Хеллоу! От одного до восьми, ёпта!"
-						} else if update.Message.Text == l10n["jpeg"] {
+						if update.Message.Text == l10n["jpeg"] {
 							newOrder.Cols = -1
-							msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 						} else {
 							newOrder.Cols = number
-							if newOrder.Type == "Blank" {
-								msg.Text = steps["AmountBlank"]
-							} else {
-								msg.Text = steps["Amount"]
-							}
-							newOrder.state = stateAmount
 						}
+						newOrder.state = stateAmount
 					}
 				case stateAmount:
 					if number, err := strconv.Atoi(update.Message.Text); err == nil {
 						newOrder.Amount = number
-						msg.Text = steps["Layout"]
 						newOrder.state = stateLayout
 					}
 				case stateLayout:
 					if isValidUrl(update.Message.Text) {
 						newOrder.Layout = update.Message.Text
-						msg.Text = steps["Mock"]
 						newOrder.state = stateMock
 					}
 				case stateMock:
 					if isValidUrl(update.Message.Text) {
 						newOrder.Mockup = update.Message.Text
-						msg.Text = steps["Deadline"]
 						newOrder.state = stateDeadline
 					}
 				case stateDeadline:
 					newOrder.Deadline = update.Message.Text
-					msg.Text = steps["Comment"]
 					newOrder.state = stateComment
 				case stateComment:
 					newOrder.Comment = update.Message.Text
-					msg.Text = steps["OrderString"] + stringifyOrder(newOrder)
 					newOrder.state = stateFin
-					msg.ReplyMarkup = finishKeyboard
 				}
 			}
 		}
 	}
+	msg = getKeyboardAndTextByState(newOrder, id)
 	return msg
 }

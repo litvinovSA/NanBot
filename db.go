@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 	"log"
@@ -79,7 +78,7 @@ func moveToDone(id int, db *sqlx.DB) {
 		log.Fatal(err)
 	}
 }
-func getNextID(db *sqlx.DB) int{
+func getNextID(db *sqlx.DB) int {
 	rows, err := db.Query("Select nextval(pg_get_serial_sequence('orders', 'id')) as new_id;")
 	if err != nil {
 		log.Fatal(err)
@@ -91,15 +90,13 @@ func getNextID(db *sqlx.DB) int{
 	return id
 }
 func putOrder(order Order, db *sqlx.DB) {
-	fmt.Println(stringifyOrder(&order))
 	fields := "type, productname,  Amount, cols, Layout, Mockup, Deadline, State, Comment, orderid, customerid"
-	fmt.Println(&order.CustomerID)
 
 	_, err := db.Exec("INSERT into customers (TelegramUsername) values ($1)", order.CustomerID)
 	if err != nil {
 		log.Println("Existing customer: ", err)
 	}
-	res, err := db.Exec("INSERT INTO orders ("+fields+") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+	_, err = db.Exec("INSERT INTO orders ("+fields+") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
 		order.Type,
 		order.ProductName,
 		order.Amount,
@@ -113,7 +110,6 @@ func putOrder(order Order, db *sqlx.DB) {
 		order.CustomerID,
 	)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
-	res.LastInsertId()
 }
