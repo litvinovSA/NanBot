@@ -13,8 +13,8 @@ const (
 	stateHello    = iota
 	stateProduct  = iota
 	stateProdtype = iota
-	stateFeature1 = iota
 	stateFeature2 = iota
+	stateFeature1 = iota
 	stateCols     = iota
 	stateAmount   = iota
 	stateLayout   = iota
@@ -114,14 +114,14 @@ func getKeyboardAndTextByState(newOrder *Order, id int64) tgbotapi.MessageConfig
 	case stateFeature1:
 		switch newOrder.ProductName {
 		case "Hoodie":
-			msg.ReplyMarkup = hoodie
+			msg.ReplyMarkup = pocket
 		case "T-shirt":
 			msg.ReplyMarkup = tshirt
 		case "Sweatshirt":
 			msg.ReplyMarkup = sweatshirt
 		}
 	case stateFeature2:
-		msg.ReplyMarkup = pocket
+		msg.ReplyMarkup = hoodie
 	case stateCols:
 		msg.ReplyMarkup = Cols
 	case stateAmount:
