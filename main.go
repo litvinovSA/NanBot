@@ -64,11 +64,11 @@ func main() {
 		}
 		if (update.Message != nil && !update.Message.IsCommand()) || update.CallbackQuery != nil {
 			if (update.Message != nil &&
-				(update.Message.Chat.UserName == "" ||
-					update.Message.Chat.UserName == "")) ||
+				(update.Message.From.ID == 1 ||
+					update.Message.From.ID == 1)) ||
 				(update.CallbackQuery != nil &&
-					(update.CallbackQuery.From.UserName == "" ||
-						update.CallbackQuery.From.UserName == "")) {
+					(update.CallbackQuery.From.ID == 1 ||
+						update.CallbackQuery.From.ID == 1)) {
 				adminServe(bot, update, id, db)
 			} else {
 				msg := NewServe(update, orders[id], id, db)
