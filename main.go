@@ -37,7 +37,12 @@ func main() {
 			}
 			if update.Message.Text != "" {
 				if update.Message.Text == l10n["Contacts"] {
-
+					msg := tgbotapi.NewMessage(id, l10n["contactsData"])
+					_, err := bot.Send(msg)
+					if err != nil {
+						log.Fatal(err)
+					}
+					continue
 				} else if update.Message.Text == l10n["Orders"] {
 					msg := tgbotapi.NewMessage(id, "")
 					orders := getUserOrders(db, update.Message.From.UserName)
