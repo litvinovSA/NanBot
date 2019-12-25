@@ -31,7 +31,7 @@ var l10n = map[string]string{
 	"inprogress":     "В производстве",
 	"done":           "Выполнен",
 	"another":        "Оформить еще один заказ",
-	"contactsData": "",
+	"contactsData": "NO CONTACTS YET, NIKITA DAI KANTAKTI",
 }
 
 var ru2eng = map[string]string{
