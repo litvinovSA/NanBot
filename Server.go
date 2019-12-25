@@ -22,7 +22,7 @@ const (
 	stateDeadline = iota
 	stateComment  = iota
 	stateFin      = iota
-	stateDone 	  = iota
+	stateDone     = iota
 )
 
 func isValidUrl(toTest string) bool {
@@ -105,43 +105,45 @@ func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx
 
 func getKeyboardAndTextByState(newOrder *Order, id int64) tgbotapi.MessageConfig {
 	msg := tgbotapi.NewMessage(id, l10n["Error"])
-	msg.Text = steps[newOrder.state]
-	switch newOrder.state {
-	case stateProduct:
-		msg.ReplyMarkup = typeKeyboard
-	case stateProdtype:
-		msg.ReplyMarkup = orderTypeKeyboard
-	case stateFeature1:
-		switch newOrder.ProductName {
-		case "Hoodie":
-			msg.ReplyMarkup = pocket
-		case "T-shirt":
-			msg.ReplyMarkup = tshirt
-		case "Sweatshirt":
-			msg.ReplyMarkup = sweatshirt
+	if newOrder != nil {
+		msg.Text = steps[newOrder.state]
+		switch newOrder.state {
+		case stateProduct:
+			msg.ReplyMarkup = typeKeyboard
+		case stateProdtype:
+			msg.ReplyMarkup = orderTypeKeyboard
+		case stateFeature1:
+			switch newOrder.ProductName {
+			case "Hoodie":
+				msg.ReplyMarkup = pocket
+			case "T-shirt":
+				msg.ReplyMarkup = tshirt
+			case "Sweatshirt":
+				msg.ReplyMarkup = sweatshirt
+			}
+		case stateFeature2:
+			msg.ReplyMarkup = hoodie
+		case stateCols:
+			msg.ReplyMarkup = Cols
+		case stateAmount:
+			if newOrder.Type == "Blank" {
+				msg.Text = l10n["AmountBlank"]
+			}
+			msg.ReplyMarkup = defaultKeyboard
+		case stateLayout:
+			msg.ReplyMarkup = defaultKeyboard
+		case stateMock:
+			msg.ReplyMarkup = defaultKeyboard
+		case stateDeadline:
+			msg.ReplyMarkup = defaultKeyboard
+		case stateComment:
+			msg.ReplyMarkup = defaultKeyboard
+		case stateFin:
+			msg.Text += stringifyOrder(newOrder)
+			msg.ReplyMarkup = finishKeyboard
+		case stateDone:
+			msg.ReplyMarkup = startKeyboard
 		}
-	case stateFeature2:
-		msg.ReplyMarkup = hoodie
-	case stateCols:
-		msg.ReplyMarkup = Cols
-	case stateAmount:
-		if newOrder.Type == "Blank" {
-			msg.Text = l10n["AmountBlank"]
-		}
-		msg.ReplyMarkup = defaultKeyboard
-	case stateLayout:
-		msg.ReplyMarkup = defaultKeyboard
-	case stateMock:
-		msg.ReplyMarkup = defaultKeyboard
-	case stateDeadline:
-		msg.ReplyMarkup = defaultKeyboard
-	case stateComment:
-		msg.ReplyMarkup = defaultKeyboard
-	case stateFin:
-		msg.Text += stringifyOrder(newOrder)
-		msg.ReplyMarkup = finishKeyboard
-	case stateDone:
-		msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 	}
 	return msg
 }
@@ -225,13 +227,13 @@ func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tg
 					}
 				case stateCols:
 					if number, err := strconv.Atoi(update.Message.Text); err == nil {
-						if update.Message.Text == l10n["jpeg"] {
-							newOrder.Cols = -1
-						} else {
-							newOrder.Cols = number
-						}
-						newOrder.state = stateAmount
+						newOrder.Cols = number
+					} else if update.Message.Text == l10n["dunno"] {
+						newOrder.state = 0
+					} else if update.Message.Text == l10n["jpeg"] {
+						newOrder.Cols = -1
 					}
+					newOrder.state = stateAmount
 				case stateAmount:
 					if number, err := strconv.Atoi(update.Message.Text); err == nil {
 						newOrder.Amount = number

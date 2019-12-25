@@ -4,7 +4,6 @@ import (
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	_ "github.com/jackc/pgx/stdlib"
 	"log"
-	"strings"
 )
 
 func main() {
@@ -21,14 +20,40 @@ func main() {
 	var newOrder *Order
 	for update := range updates {
 		var id int64
+
 		if update.Message != nil {
+			id = update.Message.Chat.ID
+			if update.Message.IsCommand() {
+				switch update.Message.Text {
+				case "/start":
+					msg := tgbotapi.NewMessage(id, "Привет, "+update.Message.From.FirstName+".\n Чем мы займемся сегодня?")
+					msg.ReplyMarkup = startKeyboard
+					_, err = bot.Send(msg)
+					if err != nil {
+						log.Println(err)
+					}
+					continue
+				}
+			}
 			if update.Message.Text != "" {
-				if strings.ToLower(update.Message.Text) == "new" {
+				if update.Message.Text == l10n["Contacts"] {
+
+				} else if update.Message.Text == l10n["Orders"] {
+					msg := tgbotapi.NewMessage(id, "")
+					orders := getUserOrders(db, update.Message.From.UserName)
+					for _, order := range orders {
+						msg.Text = stringifyOrder(&order) + "\n Статус: " + l10n[order.State]
+						_, err := bot.Send(msg)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+					continue
+				} else if update.Message.Text == l10n["NewOrder"] || update.Message.Text == l10n["another"] {
 					newOrder = initOrder(update.Message.From.UserName, getNextID(db))
 					orders[update.Message.Chat.ID] = newOrder
 				}
 			}
-			id = update.Message.Chat.ID
 		} else {
 			id = update.CallbackQuery.Message.Chat.ID
 		}
@@ -46,6 +71,7 @@ func main() {
 				if err != nil {
 					log.Fatal(err)
 				}
+
 			}
 		}
 	}

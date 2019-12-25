@@ -37,7 +37,6 @@ var typeKeyboard = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButton("Худи"),
 		tgbotapi.NewKeyboardButton("Свитшот"),
 	),
-
 )
 
 var tshirt = tgbotapi.NewReplyKeyboard(
@@ -139,7 +138,7 @@ var Cols = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(l10n["jpeg"]),
 	),
-    tgbotapi.NewKeyboardButtonRow(
+	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(l10n["dunno"]),
 	),
 	tgbotapi.NewKeyboardButtonRow(
@@ -150,5 +149,15 @@ var Cols = tgbotapi.NewReplyKeyboard(
 var defaultKeyboard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton(l10n["Back"]),
+	),
+)
+
+var startKeyboard = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(l10n["NewOrder"]),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton(l10n["Contacts"]),
+		tgbotapi.NewKeyboardButton(l10n["Orders"]),
 	),
 )

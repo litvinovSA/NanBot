@@ -56,7 +56,14 @@ func stringifyOrder(order *Order) string {
 	}
 	orderPrint += "\n"
 	orderPrint += "Количество: " + fmt.Sprintln(order.Amount)
-	orderPrint += "Количество цветов: " + fmt.Sprintln(order.Cols)
+	orderPrint += "Количество цветов: "
+	if order.Cols == 0{
+		orderPrint += "Я не знаю\n"
+	} else if order.Cols == -1 {
+		orderPrint += "Растровое изображение\n"
+	} else {
+		fmt.Sprintln(order.Cols)
+	}
 	orderPrint += "Срок: " + fmt.Sprintln(order.Deadline)
 	orderPrint += "Комментарий: " + fmt.Sprintln(order.Comment)
 	return orderPrint
