@@ -23,6 +23,7 @@ const (
 	stateComment  = iota
 	stateFin      = iota
 	stateDone     = iota
+	token  = "910932452:AAFUsTTegZxiin7oAPJ-D8AImMPfT1EQ2cE"
 )
 
 func isValidUrl(toTest string) bool {
@@ -42,8 +43,13 @@ func parseId(order string) int {
 	return id
 }
 
-func getPhoto(photoId string) {
-
+func getPhoto(photoId string) string{
+	if (isValidUrl(photoId)){
+		return photoId
+	} else {
+		return  "https://api.telegram.org/bot"+token+"/getFile?file_id="+photoId
+		"
+	}
 }
 
 func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx.DB) tgbotapi.MessageConfig {
@@ -76,6 +82,12 @@ func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int64, db *sqlx
 						if err != nil {
 							log.Fatal(err)
 						}
+						msg = tgbotapi.NewMessage(id, "")
+						msg.Text = getPhoto(order.Mockup)
+						bot.Send(msg)
+						msg = tgbotapi.NewMessage(id, "")
+						msg.Text = getPhoto(order.Layout)
+						bot.Send(msg)
 					}
 				}
 			case l10n["adminProgress"]:

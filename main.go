@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	bot, err := tgbotapi.NewBotAPI("910932452:AAFUsTTegZxiin7oAPJ-D8AImMPfT1EQ2cE")
+	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -64,10 +64,10 @@ func main() {
 		}
 		if (update.Message != nil && !update.Message.IsCommand()) || update.CallbackQuery != nil {
 			if (update.Message != nil &&
-				(update.Message.From.ID == 1 ||
+				(update.Message.From.ID == 910932452 ||
 					update.Message.From.ID == 1)) ||
 				(update.CallbackQuery != nil &&
-					(update.CallbackQuery.From.ID == 1 ||
+					(update.CallbackQuery.From.ID == 910932452 ||
 						update.CallbackQuery.From.ID == 1)) {
 				adminServe(bot, update, id, db)
 			} else {
