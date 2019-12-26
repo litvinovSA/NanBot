@@ -76,6 +76,14 @@ func main() {
 				if err != nil {
 					log.Fatal(err)
 				}
+				if orders[id].state == stateFin{
+					msg = tgbotapi.NewMessage(id, "")
+					msg.Text = getPhoto(orders[id].Mockup)
+					bot.Send(msg)
+					msg = tgbotapi.NewMessage(id, "")
+					msg.Text = getPhoto(orders[id].Layout)
+					bot.Send(msg)
+				}
 
 			}
 		}

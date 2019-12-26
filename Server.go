@@ -48,7 +48,6 @@ func getPhoto(photoId string) string{
 		return photoId
 	} else {
 		return  "https://api.telegram.org/bot"+token+"/getFile?file_id="+photoId
-		"
 	}
 }
 
@@ -153,6 +152,7 @@ func getKeyboardAndTextByState(newOrder *Order, id int64) tgbotapi.MessageConfig
 		case stateFin:
 			msg.Text += stringifyOrder(newOrder)
 			msg.ReplyMarkup = finishKeyboard
+
 		case stateDone:
 			msg.ReplyMarkup = startKeyboard
 		}
