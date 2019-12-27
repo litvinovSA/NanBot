@@ -23,7 +23,7 @@ type Order struct {
 	state       int
 }
 
-var orders = make(map[int64]*Order)
+var orders = make(map[int]*Order)
 
 func initOrder(username string, nextid int) *Order {
 	return &Order{

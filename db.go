@@ -7,6 +7,8 @@ import (
 	"strconv"
 )
 
+var db = initConnection()
+
 var schema = `
 		CREATE SCHEMA IF NOT EXISTS orders;
 
@@ -90,7 +92,7 @@ func getNextID(db *sqlx.DB) int {
 	return id
 }
 
-func getUserOrders(db *sqlx.DB, username string) []Order {
+func getUserOrders(username string) []Order {
 	var newOrders []Order
 	err := db.Select(&newOrders, "SELECT * FROM orders WHERE customerid=$1", username)
 	if err != nil {

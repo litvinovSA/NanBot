@@ -1,163 +1,121 @@
 package main
 
-import tgbotapi "github.com/Syfaro/telegram-bot-api"
 
-var availableCommand = map[string]string{
-	"/start": "Start the bot",
+import
+(
+	tb "gopkg.in/tucnak/telebot.v2"
+)
+
+var sewingBtn, blankBtn =
+	tb.ReplyButton{Text:l10n["Sewing"]},
+	tb.ReplyButton{Text:l10n["Blank"]}
+
+var orderTypeKeyboard = [][]tb.ReplyButton{
+	{sewingBtn, blankBtn},
+	{BackBtn},
 }
 
-//var Keyboards = map[int]tgbotapi.ReplyKeyboardMarkup{
-//	stateHello    : ,
-//	stateProduct  : ,
-//	stateProdtype : ,
-//	stateFeature1 : ,
-//	stateFeature2 : ,
-//	stateCols     : ,
-//	stateAmount   : ,
-//	stateMock     : ,
-//	stateLayout   : ,
-//	stateDeadline : ,
-//	stateComment  : ,
-//	stateFin      : ,
+var BackBtn = tb.ReplyButton{Text: "Назад"}
+
+var TshirtBtn = tb.ReplyButton{Text:"Футболка"}
+var HoodBtn = tb.ReplyButton{Text:"Худи"}
+var SweetBtn = tb.ReplyButton{Text:"Свитшот"}
+var typeKeyboard = [][]tb.ReplyButton{
+	{TshirtBtn, HoodBtn, SweetBtn},
+}
+
+
+var defaultTShirtBtn = tb.ReplyButton{Text:"Обычная"}
+var oversizeTShirtBtn = tb.ReplyButton{Text:"Оверсайз"}
+var tshirtKeyboard = [][]tb.ReplyButton{
+	{defaultTShirtBtn,oversizeTShirtBtn},
+	{BackBtn},
+}
+
+var SetinBtn = tb.ReplyButton{Text:"Втачной рукав"}
+var sweetRelganBtn = tb.ReplyButton{Text:"Реглан"}
+var sweetKeybord = [][]tb.ReplyButton{
+	{SetinBtn,sweetRelganBtn},
+	{BackBtn},
+}
+var hoodDefault = tb.ReplyButton{Text:"Обычное"}
+var hoodReglan = tb.ReplyButton{Text:"Реглан"}
+var hoodOversize = 	tb.ReplyButton{Text:"Оверсайз"}
+var hoodKeyboard = [][]tb.ReplyButton{
+	{hoodDefault,hoodReglan, hoodOversize},
+	{BackBtn},
+}
+
+var pocketSewingBtn, pocketSetinBtn = tb.ReplyButton{Text:"Нашив карманов"},
+	tb.ReplyButton{Text:"Втачной карман"}
+
+var pocketKeyboard = [][]tb.ReplyButton{
+	{pocketSewingBtn,pocketSetinBtn},
+	{BackBtn},
+}
+var adminNew, adminProgress, adminDone =
+	tb.ReplyButton{Text:"Новые"},
+	tb.ReplyButton{Text:"В производстве"},
+	tb.ReplyButton{Text:"Сделанные"}
+
+var adminKeybord = [][]tb.ReplyButton{
+	{adminNew,adminProgress, adminDone},
+
+}
+//
+//var orderChangeStatus = tgbotapi.NewInlineKeyboardMarkup{
+//	tgbotapi.NewInlineKeyboardRow{
+//		tgbotapi.NewInlineKeyboardButtonData{"В производство", "Production"},
+//		tgbotapi.NewInlineKeyboardButtonData{"Выполнен", "Done"},
+//	},
+//}
+//
+//var editPicker = tgbotapi.NewReplyKeyboard{
+//	tgbotapi.NewKeyboardButtonRow{
+//		tb.ReplyButton{Text:"Все верно"},
+//		tb.ReplyButton{Text:"Хочу изменить"},
+//	},
 //}
 
-var orderTypeKeyboard = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Sewing"]),
-		tgbotapi.NewKeyboardButton(l10n["Blank"]),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
+var anotherBtn, finOrderBtn =
+	tb.ReplyButton{Text:"Оформить еще один заказ"},
+	tb.ReplyButton{Text:"Закончить"}
 
-var typeKeyboard = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Футболка"),
-		tgbotapi.NewKeyboardButton("Худи"),
-		tgbotapi.NewKeyboardButton("Свитшот"),
-	),
-)
+var finKeyboard = [][]tb.ReplyButton{
+	[]tb.ReplyButton{anotherBtn,finOrderBtn},
+	[]tb.ReplyButton{BackBtn},
+}
+var jpegBtn, dunnoBtn =
+	tb.ReplyButton{Text:l10n["jpeg"]},
+	tb.ReplyButton{Text:l10n["dunno"]}
 
-var tshirt = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Обычная"),
-		tgbotapi.NewKeyboardButton("Оверсайз"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
+var colorsKeyboard = [][]tb.ReplyButton{
+	{	tb.ReplyButton{Text:"1"},
+		tb.ReplyButton{Text:"2"},
+		tb.ReplyButton{Text:"3"},
+		tb.ReplyButton{Text:"4"},
+	},
+	{	tb.ReplyButton{Text:"5"},
+		tb.ReplyButton{Text:"6"},
+		tb.ReplyButton{Text:"7"},
+		tb.ReplyButton{Text:"8"},
+	},
+	{jpegBtn},
+	{dunnoBtn},
+	{BackBtn},
+}
 
-var sweatshirt = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Втачной рукав"),
-		tgbotapi.NewKeyboardButton("Реглан"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
+var defaultKeyboard = [][]tb.ReplyButton{
+	{BackBtn},
+}
 
-var hoodie = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Обычное"),
-		tgbotapi.NewKeyboardButton("Реглан"),
-		tgbotapi.NewKeyboardButton("Оверсайз"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
-var adminStart = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Показать новые заказы"),
-		tgbotapi.NewKeyboardButton("Показать в процессе"),
-		tgbotapi.NewKeyboardButton("Показать сделанные"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
+var newOrderBtn, contactsBtn, myordersBtn =
+	tb.ReplyButton{Text:l10n["NewOrder"]},
+	tb.ReplyButton{Text:l10n["Contacts"]},
+	tb.ReplyButton{Text:l10n["Orders"]}
 
-var orderChangeStatus = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("В производство", "Production"),
-		tgbotapi.NewInlineKeyboardButtonData("Выполнен", "Done"),
-	),
-)
+	var startKeyboard = [][]tb.ReplyButton{
+	{newOrderBtn},
+	{myordersBtn,contactsBtn},
+}
 
-var pocket = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Нашив карманов"),
-		tgbotapi.NewKeyboardButton("Втачной карман"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
-
-var adminDefault = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Новые"),
-		tgbotapi.NewKeyboardButton("В производстве"),
-		tgbotapi.NewKeyboardButton("Сделанные"),
-	),
-)
-
-var editPicker = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Все верно"),
-		tgbotapi.NewKeyboardButton("Хочу изменить"),
-	),
-)
-
-var finishKeyboard = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Оформить еще один заказ"),
-		tgbotapi.NewKeyboardButton("Закончить"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
-
-var Cols = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("1"),
-		tgbotapi.NewKeyboardButton("2"),
-		tgbotapi.NewKeyboardButton("3"),
-		tgbotapi.NewKeyboardButton("4"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("5"),
-		tgbotapi.NewKeyboardButton("6"),
-		tgbotapi.NewKeyboardButton("7"),
-		tgbotapi.NewKeyboardButton("8"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["jpeg"]),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["dunno"]),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
-
-var defaultKeyboard = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Back"]),
-	),
-)
-
-var startKeyboard = tgbotapi.NewReplyKeyboard(
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["NewOrder"]),
-	),
-	tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton(l10n["Contacts"]),
-		tgbotapi.NewKeyboardButton(l10n["Orders"]),
-	),
-)
