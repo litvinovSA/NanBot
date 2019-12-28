@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/google/uuid"
+	tb "gopkg.in/tucnak/telebot.v2"
 )
 
 type Order struct {
@@ -15,17 +16,20 @@ type Order struct {
 	Cols        int       `db:"cols"`
 	Mockup      string    `db:"mockup"`
 	Layout      string    `db:"layout"`
-	CustomerID  string    `db:"customerid"`
+	CustomerID  int    `db:"customerid"`
+	CustomerNick  string    `db:"customernick"`
 	Deadline    string    `db:"deadline"`
 	Comment     string    `db:"comment"`
 	State       string    `db:"state"`
 	edit        bool
 	state       int
+	molAlbum 	tb.Album
+
 }
 
 var orders = make(map[int]*Order)
 
-func initOrder(username string, nextid int) *Order {
+func initOrder(username string, uid, nextid int) *Order {
 	return &Order{
 		Id:          nextid,
 		Orderid:     uuid.New(),
@@ -36,7 +40,8 @@ func initOrder(username string, nextid int) *Order {
 		Cols:        0,
 		Mockup:      "",
 		Layout:      "",
-		CustomerID:  username,
+		CustomerID:  uid,
+		CustomerNick: username,
 		Deadline:    "",
 		Comment:     "",
 		State:       "new",
@@ -49,8 +54,8 @@ func stringifyOrder(order *Order) string {
 	var orderPrint string
 	orderPrint += "Номер заказа: " + fmt.Sprintln(order.Id)
 	orderPrint += "Ник заказчика: @" + fmt.Sprintln(order.CustomerID)
-	orderPrint += "Тип заказа: " + fmt.Sprintln(l10n[order.Type])
-	orderPrint += "Изделие: " + fmt.Sprintln(l10n[order.ProductName])
+	orderPrint += "Тип заказа: " + fmt.Sprintln(order.Type)
+	orderPrint += "Изделие: " + fmt.Sprintln(order.ProductName)
 	if len(order.Features) != 0 {
 		orderPrint += "Особенности: " + order.Features
 	}

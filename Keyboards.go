@@ -22,6 +22,7 @@ var HoodBtn = tb.ReplyButton{Text:"Худи"}
 var SweetBtn = tb.ReplyButton{Text:"Свитшот"}
 var typeKeyboard = [][]tb.ReplyButton{
 	{TshirtBtn, HoodBtn, SweetBtn},
+	{BackBtn},
 }
 
 
@@ -62,6 +63,14 @@ var adminKeybord = [][]tb.ReplyButton{
 	{adminNew,adminProgress, adminDone},
 
 }
+
+var adminToProgress, adminToDone =
+	tb.InlineButton{Text:"В производство"},
+	tb.InlineButton{Text:"Выполнен"}
+	var adminInlineKeyboard = [][]tb.InlineButton{
+		{adminToProgress, adminToDone},
+	}
+
 //
 //var orderChangeStatus = tgbotapi.NewInlineKeyboardMarkup{
 //	tgbotapi.NewInlineKeyboardRow{

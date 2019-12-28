@@ -12,10 +12,6 @@ var db = initConnection()
 var schema = `
 		CREATE SCHEMA IF NOT EXISTS orders;
 
-		CREATE TABLE IF NOT EXISTS customers(
-		CustomerID SERIAL primary key,
-		TelegramUsername text not null unique);
-		
 		CREATE TABLE IF NOT EXISTS orders(
 		"id" SERIAL primary key,
 		"orderid" UUID not null,
@@ -28,7 +24,8 @@ var schema = `
 		"deadline" text not null,
 		"state" text not null,
 		"comment" text not null,
-		"customerid" text )
+		"customerid" int not null,
+		"customernick" text)
 `
 
 func initConnection() *sqlx.DB {
@@ -102,13 +99,13 @@ func getUserOrders(username string) []Order {
 }
 
 func putOrder(order Order, db *sqlx.DB) {
-	fields := "type, productname,  Amount, cols, Layout, Mockup, Deadline, State, Comment, orderid, customerid"
+	fields := "type, productname,  Amount, cols, Layout, Mockup, Deadline, State, Comment, orderid, customerid, customernick"
 
 	_, err := db.Exec("INSERT into customers (TelegramUsername) values ($1)", order.CustomerID)
 	if err != nil {
 		log.Println("Existing customer: ", err)
 	}
-	_, err = db.Exec("INSERT INTO orders ("+fields+") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+	_, err = db.Exec("INSERT INTO orders ("+fields+") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
 		order.Type,
 		order.ProductName,
 		order.Amount,
@@ -120,6 +117,7 @@ func putOrder(order Order, db *sqlx.DB) {
 		order.Comment,
 		order.Orderid,
 		order.CustomerID,
+		order.CustomerNick,
 	)
 	if err != nil {
 		log.Println(err)

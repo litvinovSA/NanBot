@@ -2,6 +2,7 @@ package main
 
 import (
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
+	tb "gopkg.in/tucnak/telebot.v2"
 	"log"
 	"net/url"
 	"strconv"
@@ -10,8 +11,8 @@ import (
 
 const (
 	stateHello    = iota
+	stateType     = iota
 	stateProduct  = iota
-	stateProdtype = iota
 	stateFeature2 = iota
 	stateFeature1 = iota
 	stateCols     = iota
@@ -117,51 +118,55 @@ func getPhoto(photoId string, bot *tgbotapi.BotAPI) string{
 //	return tgbotapi.NewMessage(id, "Привет, Мастер!")
 //}
 //
-//func getKeyboardAndTextByState(newOrder *Order, id int) tgbotapi.MessageConfig {
-//	msg := tb.Message{}
-//	if newOrder != nil {
-//		msg.Text = steps[newOrder.state]
-//		switch newOrder.state {
-//		case stateProduct:
-//			msg.ReplyMarkup = typeKeyboard
-//		case stateProdtype:
-//			msg.ReplyMarkup = orderTypeKeyboard
-//		case stateFeature1:
-//			switch newOrder.ProductName {
-//			case "Hoodie":
-//				msg.ReplyMarkup = pocket
-//			case "T-shirt":
-//				msg.ReplyMarkup = tshirt
-//			case "Sweatshirt":
-//				msg.ReplyMarkup = sweatshirt
-//			}
-//		case stateFeature2:
-//			msg.ReplyMarkup = hoodie
-//		case stateCols:
-//			msg.ReplyMarkup = Cols
-//		case stateAmount:
-//			if newOrder.Type == "Blank" {
-//				msg.Text = l10n["AmountBlank"]
-//			}
-//			msg.ReplyMarkup = defaultKeyboard
-//		case stateLayout:
-//			msg.ReplyMarkup = defaultKeyboard
-//		case stateMock:
-//			msg.ReplyMarkup = defaultKeyboard
-//		case stateDeadline:
-//			msg.ReplyMarkup = defaultKeyboard
-//		case stateComment:
-//			msg.ReplyMarkup = defaultKeyboard
-//		case stateFin:
-//			msg.Text += stringifyOrder(newOrder)
-//			msg.ReplyMarkup = finishKeyboard
-//
-//		case stateDone:
-//			msg.ReplyMarkup = startKeyboard
-//		}
-//	}
-//	return msg
-//}
+func getKeyboardAndTextByState(newOrder *Order) (string, tb.ReplyMarkup) {
+	var msg string
+	keys :=  tb.ReplyMarkup{ResizeReplyKeyboard:true, OneTimeKeyboard:true}
+	if newOrder != nil {
+		msg = steps[newOrder.state]
+		switch newOrder.state {
+		case stateHello:
+			keys.ReplyKeyboard = startKeyboard
+		case stateProduct:
+			keys.ReplyKeyboard = typeKeyboard
+		case stateType:
+			keys.ReplyKeyboard  = orderTypeKeyboard
+			keys.OneTimeKeyboard = false
+		case stateFeature1:
+			switch newOrder.ProductName {
+			case l10n["Hoodie"]:
+				keys.ReplyKeyboard  = pocketKeyboard
+			case l10n["T-shirt"]:
+				keys.ReplyKeyboard  = tshirtKeyboard
+			case l10n["Sweatshirt"]:
+				keys.ReplyKeyboard  = sweetKeybord
+			}
+		case stateFeature2:
+			keys.ReplyKeyboard  = hoodKeyboard
+		case stateCols:
+			keys.ReplyKeyboard  = colorsKeyboard
+		case stateAmount:
+			if newOrder.Type == "Blank" {
+				 msg = l10n["AmountBlank"]
+			}
+			keys.ReplyKeyboard  = defaultKeyboard
+		case stateLayout:
+			keys.ReplyKeyboard  = defaultKeyboard
+		case stateMock:
+			keys.ReplyKeyboard  = defaultKeyboard
+		case stateDeadline:
+			keys.ReplyKeyboard  = defaultKeyboard
+		case stateComment:
+			keys.ReplyKeyboard  = defaultKeyboard
+		case stateFin:
+			msg += stringifyOrder(newOrder)
+			keys.ReplyKeyboard  = finKeyboard
+
+		case stateDone:
+			keys.ReplyKeyboard  = startKeyboard
+		}
+	}
+ 	return msg, keys
+}
 //
 //func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tgbotapi.MessageConfig {
 //	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
@@ -182,7 +187,7 @@ func getPhoto(photoId string, bot *tgbotapi.BotAPI) string{
 //			case l10n["Back"]:
 //				if newOrder.state == stateCols {
 //					if newOrder.Type == "Blank" {
-//						newOrder.state = stateProdtype
+//						newOrder.state = stateType
 //					} else {
 //						newOrder.state = stateFeature1
 //					}
@@ -190,7 +195,7 @@ func getPhoto(photoId string, bot *tgbotapi.BotAPI) string{
 //					if newOrder.ProductName == "Hoodie" {
 //						newOrder.state = stateFeature2
 //					} else {
-//						newOrder.state = stateProdtype
+//						newOrder.state = stateType
 //					}
 //				} else {
 //					newOrder.state--
@@ -198,10 +203,10 @@ func getPhoto(photoId string, bot *tgbotapi.BotAPI) string{
 //			case l10n["T-shirt"], l10n["Sweatshirt"], l10n["Hoodie"]:
 //				if newOrder.state == stateProduct {
 //					newOrder.ProductName = ru2eng[update.Message.Text]
-//					newOrder.state = stateProdtype
+//					newOrder.state = stateType
 //				}
 //			case l10n["Blank"], l10n["Sewing"]:
-//				if newOrder.state == stateProdtype {
+//				if newOrder.state == stateType {
 //					newOrder.Type = ru2eng[update.Message.Text]
 //					if update.Message.Text == l10n["Blank"] {
 //						newOrder.state = stateCols
