@@ -530,10 +530,12 @@ func main() {
 					log.Println(err)
 				}
 
-				text := tb.Message{
-					Text:        stringifyOrder(&order) + "\n Статус: " + l10n[order.State],
-					ReplyMarkup: tb.InlineKeyboardMarkup{InlineKeyboard: adminInlineKeyboard}}
-				_, err = bot.Send(msg.Sender, &text)
+				text := stringifyOrder(&order) + "\n Статус: " + l10n[order.State]
+				
+				_, err = bot.Send(msg.Sender, text, &tb.ReplyMarkup{
+					InlineKeyboard: adminInlineKeyboard,
+					ResizeReplyKeyboard:true,
+				})
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -600,21 +602,23 @@ func main() {
 			}
 		}
 	})
-	bot.Handle(&adminToDone, func(msg *tb.Message) {
-		id := parseId(msg.Text)
+	bot.Handle(&adminToDone, func(msg *tb.Callback) {
+		id := parseId(msg.Message.Text)
 		moveToDone(id, db)
-		err := bot.Delete(msg)
+		err := bot.Delete(msg.Message)
 		if err != nil {
 			log.Println(err)
 		}
+		bot.Respond(msg)
 	})
-	bot.Handle(&adminToDone, func(msg *tb.Message) {
-		id := parseId(msg.Text)
+	bot.Handle(&adminToDone, func(msg *tb.Callback) {
+		id := parseId(msg.Message.Text)
 		moveToDone(id, db)
-		err := bot.Delete(msg)
+		err := bot.Delete(msg.Message)
 		if err != nil {
 			log.Println(err)
 		}
+		bot.Respond(msg)
 	})
 
 	bot.Handle("/photo", func(msg *tb.Message) {
