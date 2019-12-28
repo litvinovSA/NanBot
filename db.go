@@ -89,9 +89,9 @@ func getNextID(db *sqlx.DB) int {
 	return id
 }
 
-func getUserOrders(username string) []Order {
+func getUserOrders(id int) []Order {
 	var newOrders []Order
-	err := db.Select(&newOrders, "SELECT * FROM orders WHERE customerid=$1", username)
+	err := db.Select(&newOrders, "SELECT * FROM orders WHERE customerid=$1", id)
 	if err != nil {
 		log.Fatal(err)
 	}

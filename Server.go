@@ -23,10 +23,9 @@ const (
 	stateComment  = iota
 	stateFin      = iota
 	stateDone     = iota
-
 )
 const (
-	token  = "910932452:AAFUsTTegZxiin7oAPJ-D8AImMPfT1EQ2cE"
+	token = "910932452:AAFUsTTegZxiin7oAPJ-D8AImMPfT1EQ2cE"
 )
 
 func isValidUrl(toTest string) bool {
@@ -46,14 +45,15 @@ func parseId(order string) int {
 	return id
 }
 
-func getPhoto(photoId string, bot *tgbotapi.BotAPI) string{
-	if (isValidUrl(photoId)){
+func getPhoto(photoId string, bot *tgbotapi.BotAPI) string {
+	if isValidUrl(photoId) {
 		return photoId
 	} else {
 		photoConfig, _ := bot.GetFile(tgbotapi.FileConfig{photoId})
-		return  "https://api.telegram.org/file/bot"+token+"/"+ photoConfig.FilePath
+		return "https://api.telegram.org/file/bot" + token + "/" + photoConfig.FilePath
 	}
 }
+
 //
 //func adminServe(bot *tgbotapi.BotAPI, update tgbotapi.Update, id int, db *sqlx.DB) tgbotapi.MessageConfig {
 //	if update.CallbackQuery != nil {
@@ -120,7 +120,7 @@ func getPhoto(photoId string, bot *tgbotapi.BotAPI) string{
 //
 func getKeyboardAndTextByState(newOrder *Order) (string, tb.ReplyMarkup) {
 	var msg string
-	keys :=  tb.ReplyMarkup{ResizeReplyKeyboard:true, OneTimeKeyboard:true}
+	keys := tb.ReplyMarkup{ResizeReplyKeyboard: true, OneTimeKeyboard: true}
 	if newOrder != nil {
 		msg = steps[newOrder.state]
 		switch newOrder.state {
@@ -129,44 +129,45 @@ func getKeyboardAndTextByState(newOrder *Order) (string, tb.ReplyMarkup) {
 		case stateProduct:
 			keys.ReplyKeyboard = typeKeyboard
 		case stateType:
-			keys.ReplyKeyboard  = orderTypeKeyboard
+			keys.ReplyKeyboard = orderTypeKeyboard
 			keys.OneTimeKeyboard = false
 		case stateFeature1:
 			switch newOrder.ProductName {
 			case l10n["Hoodie"]:
-				keys.ReplyKeyboard  = pocketKeyboard
+				keys.ReplyKeyboard = pocketKeyboard
 			case l10n["T-shirt"]:
-				keys.ReplyKeyboard  = tshirtKeyboard
+				keys.ReplyKeyboard = tshirtKeyboard
 			case l10n["Sweatshirt"]:
-				keys.ReplyKeyboard  = sweetKeybord
+				keys.ReplyKeyboard = sweetKeybord
 			}
 		case stateFeature2:
-			keys.ReplyKeyboard  = hoodKeyboard
+			keys.ReplyKeyboard = hoodKeyboard
 		case stateCols:
-			keys.ReplyKeyboard  = colorsKeyboard
+			keys.ReplyKeyboard = colorsKeyboard
 		case stateAmount:
 			if newOrder.Type == "Blank" {
-				 msg = l10n["AmountBlank"]
+				msg = l10n["AmountBlank"]
 			}
-			keys.ReplyKeyboard  = defaultKeyboard
+			keys.ReplyKeyboard = defaultKeyboard
 		case stateLayout:
-			keys.ReplyKeyboard  = defaultKeyboard
+			keys.ReplyKeyboard = defaultKeyboard
 		case stateMock:
-			keys.ReplyKeyboard  = defaultKeyboard
+			keys.ReplyKeyboard = defaultKeyboard
 		case stateDeadline:
-			keys.ReplyKeyboard  = defaultKeyboard
+			keys.ReplyKeyboard = defaultKeyboard
 		case stateComment:
-			keys.ReplyKeyboard  = defaultKeyboard
+			keys.ReplyKeyboard = defaultKeyboard
 		case stateFin:
 			msg += stringifyOrder(newOrder)
-			keys.ReplyKeyboard  = finKeyboard
+			keys.ReplyKeyboard = finKeyboard
 
 		case stateDone:
-			keys.ReplyKeyboard  = startKeyboard
+			keys.ReplyKeyboard = startKeyboard
 		}
 	}
- 	return msg, keys
+	return msg, keys
 }
+
 //
 //func NewServe(update tgbotapi.Update, newOrder *Order, id int64, db *sqlx.DB) tgbotapi.MessageConfig {
 //	msg := tgbotapi.NewMessage(id, "Упс, что-то пошло не так! Попробуй еще раз.")
