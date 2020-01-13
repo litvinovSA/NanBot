@@ -36,8 +36,8 @@ var sweetKeybord = [][]tb.ReplyButton{
 	{BackBtn},
 }
 var hoodDefault = tb.ReplyButton{Text: "Обычное"}
-var hoodReglan = tb.ReplyButton{Text: "Реглан"}
-var hoodOversize = tb.ReplyButton{Text: "Оверсайз"}
+var hoodReglan = tb.ReplyButton{Text: "Рeглан"}
+var hoodOversize = tb.ReplyButton{Text: "Овeрсайз"}
 var hoodKeyboard = [][]tb.ReplyButton{
 	{hoodDefault, hoodReglan, hoodOversize},
 	{BackBtn},
@@ -58,10 +58,14 @@ var adminKeybord = [][]tb.ReplyButton{
 	{adminNew, adminProgress, adminDone},
 }
 
-var adminToProgress, adminToDone = tb.InlineButton{Text: "В производство"},
-	tb.InlineButton{Text: "Выполнен"}
+var adminToProgress, adminToDone, adminEdit = tb.InlineButton{Unique: "1", Text: "В производство"},
+	tb.InlineButton{Unique: "2", Text: "Выполнен"},
+	tb.InlineButton{Unique: "0", Text: "Редактировать"}
 var adminInlineKeyboard = [][]tb.InlineButton{
-	{adminToProgress, adminToDone},
+	{adminToProgress, adminToDone}, {adminEdit},
+}
+var adminInlineKeyboardProg = [][]tb.InlineButton{
+	{adminToDone}, {adminEdit},
 }
 
 //

@@ -318,20 +318,36 @@ func main() {
 	// Block 5 Cols
 	bot.Handle(&dunnoBtn, func(msg *tb.Message) {
 		newOrder := orders[msg.Sender.ID]
-		newOrder.state = 0
+		newOrder.Cols = 0
 		newOrder.state = stateAmount
 		text := steps[stateAmount]
-		_, err := bot.Send(msg.Sender, text)
+		if newOrder.Type == l10n["Blank"] {
+			text = l10n["AmountBlank"]
+		}
+		keys := tb.ReplyMarkup{
+			ReplyKeyboard:       defaultKeyboard,
+			ResizeReplyKeyboard: true,
+			OneTimeKeyboard:     true,
+		}
+		_, err := bot.Send(msg.Sender, text, &keys)
 		if err != nil {
 			log.Fatal(err)
 		}
 	})
 	bot.Handle(&jpegBtn, func(msg *tb.Message) {
 		newOrder := orders[msg.Sender.ID]
-		newOrder.state = 0
+		newOrder.Cols = -1
 		newOrder.state = stateAmount
 		text := steps[stateAmount]
-		_, err := bot.Send(msg.Sender, text)
+		if newOrder.Type == l10n["Blank"] {
+			text = l10n["AmountBlank"]
+		}
+		keys := tb.ReplyMarkup{
+			ReplyKeyboard:       defaultKeyboard,
+			ResizeReplyKeyboard: true,
+			OneTimeKeyboard:     true,
+		}
+		_, err := bot.Send(msg.Sender, text, &keys)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -349,7 +365,7 @@ func main() {
 			if newOrder.state == stateCols {
 				newOrder.Cols = num
 				newOrder.state = stateAmount
-				if newOrder.Type == "Blank" {
+				if newOrder.Type == l10n["Blank"] {
 					text = l10n["AmountBlank"]
 				} else {
 					text = steps[stateAmount]
@@ -531,10 +547,10 @@ func main() {
 				}
 
 				text := stringifyOrder(&order) + "\n Статус: " + l10n[order.State]
-				
+
 				_, err = bot.Send(msg.Sender, text, &tb.ReplyMarkup{
-					InlineKeyboard: adminInlineKeyboard,
-					ResizeReplyKeyboard:true,
+					InlineKeyboard:      adminInlineKeyboard,
+					ResizeReplyKeyboard: true,
 				})
 				if err != nil {
 					log.Fatal(err)
@@ -565,7 +581,10 @@ func main() {
 				}
 
 				text := stringifyOrder(&order) + "\n Статус: " + l10n[order.State]
-				_, err = bot.Send(msg.Sender, text)
+				_, err = bot.Send(msg.Sender, text, &tb.ReplyMarkup{
+					InlineKeyboard:      adminInlineKeyboardProg,
+					ResizeReplyKeyboard: true,
+				})
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -611,16 +630,15 @@ func main() {
 		}
 		bot.Respond(msg)
 	})
-	bot.Handle(&adminToDone, func(msg *tb.Callback) {
+	bot.Handle(&adminToProgress, func(msg *tb.Callback) {
 		id := parseId(msg.Message.Text)
-		moveToDone(id, db)
+		moveToProgress(id, db)
 		err := bot.Delete(msg.Message)
 		if err != nil {
 			log.Println(err)
 		}
 		bot.Respond(msg)
 	})
-
 	bot.Handle("/photo", func(msg *tb.Message) {
 		file, err := bot.FileByID("AgADAgADhKwxG3aMOEh1WwzSyDzx4KbEwg8ABAEAAwIAA3kAA750AQABFgQ")
 		if err != nil {

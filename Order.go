@@ -52,7 +52,7 @@ func initOrder(username string, uid, nextid int) *Order {
 func stringifyOrder(order *Order) string {
 	var orderPrint string
 	orderPrint += "Номер заказа: " + fmt.Sprintln(order.Id)
-	orderPrint += "Ник заказчика: @" + fmt.Sprintln(order.CustomerID)
+	orderPrint += "Ник заказчика: @" + fmt.Sprintln(order.CustomerNick)
 	orderPrint += "Тип заказа: " + fmt.Sprintln(order.Type)
 	orderPrint += "Изделие: " + fmt.Sprintln(order.ProductName)
 	if len(order.Features) != 0 {
@@ -66,7 +66,7 @@ func stringifyOrder(order *Order) string {
 	} else if order.Cols == -1 {
 		orderPrint += "Растровое изображение\n"
 	} else {
-		fmt.Sprintln(order.Cols)
+		orderPrint += fmt.Sprintln(order.Cols)
 	}
 	orderPrint += "Срок: " + fmt.Sprintln(order.Deadline)
 	orderPrint += "Комментарий: " + fmt.Sprintln(order.Comment)
